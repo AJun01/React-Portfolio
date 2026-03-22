@@ -1,0 +1,267 @@
+/* 斜向手风琴：全屏 + 超宽容器掩盖 skew 死角 */
+.root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #12131f;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* skew / 画布 / 边线：每列 PortalItem 注入；最外宽高见 PortalLayout PORTAL_OUTER_ROW */
+.portalContainer {
+  display: flex;
+  width: var(--portal-container-width, 140vw);
+  height: 100%;
+  min-height: 100%;
+  margin-left: var(--portal-container-margin-left, -20vw);
+  overflow: hidden;
+  background: #000;
+}
+
+/* 外层切片倾斜 */
+.portalSlice {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  flex: 1 1 0;
+  transform: skewX(var(--portal-skew-deg, 35deg));
+  transform-origin: center center;
+  overflow: hidden;
+  border-right: var(
+    --portal-slice-border,
+    2px solid rgba(255, 255, 255, 0.1)
+  );
+  cursor: pointer;
+  /* z-index 不参与 transition：z-index 动画无法 GPU 合成，只会触发持续重绘 */
+  transition: var(
+    --portal-flex-transition,
+    flex 0.6s cubic-bezier(0.25, 1, 0.5, 1)
+  );
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 内层画布：transform 由 framer-motion 实时注入
+   = translateX(-sliceLeftVw) skewX(-skewDeg)
+   translateX 锚定视口，skewX 抵消父层倾斜，合为一条 transform（GPU 合成，零 layout reflow）。
+   width 固定 100vw，相当于一张钉在视口上的幕布；portalSlice overflow:hidden 负责裁剪。 */
+.portalCounter {
+  position: absolute;
+  top: var(--portal-slice-canvas-top, 0);
+  left: 0;
+  width: 100vw;
+  height: var(--portal-slice-canvas-height, 100%);
+  transform-origin: center center;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.counterStack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* 底图 / 视频：铺满 counter，不随 flex 被「拉糊」 */
+.portalPoster,
+.portalVideo {
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center center;
+  pointer-events: none;
+}
+
+.portalVideo {
+  z-index: 1;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+
+.dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 22, 0.26);
+  pointer-events: none;
+}
+
+/* 内容区固定在底部，叠在底部渐变遮罩上 */
+.content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 0.75rem 1.6rem;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.25) 40%,
+    transparent 65%
+  );
+}
+
+/* idle: 小标题在底部；hover: 向上放大 */
+.title {
+  font-family: "Russo One", system-ui, sans-serif;
+  font-size: clamp(0.62rem, 1.25vw, 1rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
+  margin: 0;
+  transform-origin: bottom center;
+  transition: color 0.35s ease, text-shadow 0.35s ease,
+    transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.portalSlice[data-active="true"] .title {
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+  transform: scale(1.22) translateY(-0.18em);
+}
+
+/* CTA 按钮：idle 不可见，hover 从底部滑入 */
+.hint {
+  margin-top: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38em;
+  padding: 0.28em 0.85em;
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(200, 235, 255, 0);
+  border: 1px solid rgba(200, 230, 255, 0);
+  border-radius: 1px;
+  opacity: 0;
+  transform: translateY(9px);
+  transition:
+    color 0.38s ease,
+    border-color 0.38s ease,
+    opacity 0.38s ease,
+    transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.portalSlice[data-active="true"] .hint {
+  color: rgba(210, 240, 255, 0.95);
+  border-color: rgba(200, 230, 255, 0.42);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hintArrow {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.portalSlice[data-active="true"] .hintArrow {
+  transform: translateX(4px);
+}
+
+/* === 分割线流光 ===
+   ::after 定位在 right:0 紧贴 border-right，高度 22% 作为"水滴"。
+   overflow:hidden 负责裁剪——动画开头（translateY(-100%)）藏在顶部以上，
+   结尾（translateY(600%)）沉入底部以下，入场/离场都无硬切。
+   各 data-variant 注入主题色 CSS 变量；hover 时提亮并加软模糊发光。 */
+.portalSlice::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 2px;
+  height: 22%;
+  pointer-events: none;
+  z-index: 10;
+  will-change: transform;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--border-glow, rgba(255, 255, 255, 0.42)) 25%,
+    var(--border-glow-bright, rgba(255, 255, 255, 0.88)) 50%,
+    var(--border-glow, rgba(255, 255, 255, 0.42)) 75%,
+    transparent 100%
+  );
+  animation: sliceBorderDrop var(--border-anim-dur, 4.2s) ease-in-out infinite;
+  animation-delay: var(--border-anim-delay, 0s);
+}
+
+.portalSlice[data-active="true"]::after {
+  filter: blur(0.6px) brightness(1.7);
+}
+
+.portalSlice[data-variant="cyber"]::after {
+  --border-glow: rgba(0, 220, 255, 0.58);
+  --border-glow-bright: rgba(140, 248, 255, 0.95);
+}
+
+.portalSlice[data-variant="filmNoir"]::after {
+  --border-glow: rgba(210, 195, 165, 0.52);
+  --border-glow-bright: rgba(245, 235, 205, 0.9);
+}
+
+.portalSlice[data-variant="pixel"]::after {
+  --border-glow: rgba(80, 250, 195, 0.58);
+  --border-glow-bright: rgba(165, 255, 225, 0.95);
+}
+
+.portalSlice[data-variant="miamiVice"]::after {
+  --border-glow: rgba(255, 45, 118, 0.62);
+  --border-glow-bright: rgba(255, 128, 175, 0.95);
+}
+
+@keyframes sliceBorderDrop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(600%);
+    opacity: 0;
+  }
+}
+
+.flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.12),
+    transparent 55%
+  );
+  opacity: 0;
+}

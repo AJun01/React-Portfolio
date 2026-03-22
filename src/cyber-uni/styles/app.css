@@ -1,0 +1,128 @@
+@import url("https://fonts.googleapis.com/css2?family=Russo+One&display=swap");
+
+@font-face {
+    font-family: 'Fast-Font';
+    src: url('./fonts/Fast_Serif.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+body {
+    font-family: "Russo One", sans-serif;
+    color: white;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #333;
+}
+
+.parent-container {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Common Styles for Sliding Animations */
+.slide-right-enter,
+.slide-right-exit-active,
+.slide-left-enter,
+.slide-left-exit-active {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    will-change: transform, opacity;
+}
+
+/* Slide to the right (Forward Navigation) */
+/* Entering Component */
+.slide-right-enter {
+    transform: translateX(100%); /* Start off-screen to the right */
+    opacity: 0;
+}
+
+.slide-right-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    z-index: 2; /* Ensure entering element is on top */
+}
+
+/* Exiting Component */
+.slide-right-exit {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.slide-right-exit-active {
+    transform: translateX(-100%); /* Move off-screen to the left */
+    opacity: 0; /* Fade out */
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    z-index: 1;
+}
+
+/* Slide to the left (Backward Navigation) */
+/* Entering Component */
+.slide-left-enter {
+    transform: translateX(-100%); /* Start off-screen to the left */
+    opacity: 0;
+}
+
+.slide-left-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    z-index: 2;
+}
+
+/* Exiting Component */
+.slide-left-exit {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.slide-left-exit-active {
+    transform: translateX(100%); /* Move off-screen to the right */
+    opacity: 0; /* Fade out */
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    z-index: 1;
+}
+
+/* Wrapper for pages */
+.page-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+  }
+  
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+:root {
+    --purple: #540351;
+    --blue: #3627b1;
+    --cyan: #25afce;
+    --transparent: #00000000;
+    --radius-left: 3rem 0 0 3rem;
+    --radius-right: 0 3rem 3rem 0;
+}
+
+button:hover,
+.class-sub-container a:hover,
+.project-item:hover,
+.skill-item:hover,
+.item:not(.active):hover,
+.sub-container-2:not(.active-subheading):hover,
+.sub-container-3:not(.active-subheading):hover {
+    background-image: linear-gradient(90deg, #ffffff00, #ffffff42 50%, #ffffff00);
+}

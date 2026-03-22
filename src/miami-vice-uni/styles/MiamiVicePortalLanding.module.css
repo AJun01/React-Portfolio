@@ -1,0 +1,155 @@
+/* Miami Vice 传送门：idle 干净；hover 日落斜扫光 + 粉霓虹呼吸（区别于 Cyber 蓝绿扫 / Pixel 磷光） */
+
+.innerRoot {
+  isolation: isolate;
+}
+
+.mediaStack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.mediaBoost {
+  position: absolute;
+  inset: 0;
+}
+
+/* hover 时暖调增色：饱和度 + 微微色相偏暖，模拟 Magic Hour 光感 */
+:global([data-variant="miamiVice"][data-active="true"]) .mediaBoost :global(.portalPoster),
+:global([data-variant="miamiVice"][data-active="true"]) .mediaBoost :global(.portalVideo) {
+  filter: saturate(1.35) contrast(1.06) brightness(1.08) hue-rotate(-6deg);
+  transition: filter 0.5s ease;
+}
+
+/* 斜向日落扫光：阳光透过百叶窗 / 游艇舷窗 */
+.sunsetBeam {
+  position: absolute;
+  left: -25%;
+  width: 55%;
+  height: 200%;
+  top: -50%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    95deg,
+    transparent 0%,
+    rgba(255, 110, 60, 0.04) 25%,
+    rgba(255, 45, 120, 0.13) 50%,
+    rgba(190, 60, 255, 0.07) 75%,
+    transparent 100%
+  );
+  filter: blur(16px);
+  mix-blend-mode: screen;
+}
+
+:global([data-variant="miamiVice"][data-active="true"]) .sunsetBeam {
+  opacity: 1;
+  animation: viceSweep 3.4s ease-in-out infinite;
+}
+
+@keyframes viceSweep {
+  0% {
+    transform: translateX(-80%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(230%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(230%);
+    opacity: 0;
+  }
+}
+
+/* 叠层：洋红/紫 sunset 渐变，hover 时缓慢呼吸 */
+@keyframes viceBreath {
+  0%,
+  100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.dimVice {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 45, 120, 0.12) 0%,
+    rgba(155, 40, 220, 0.07) 50%,
+    rgba(255, 90, 50, 0.06) 100%
+  );
+  opacity: 0;
+}
+
+.dimViceInactive {
+  opacity: 0;
+}
+
+.dimViceActive {
+  animation: viceBreath 3s ease-in-out infinite;
+}
+
+.contentVice {
+  z-index: 4;
+}
+
+.titleVice {
+  transition: color 0.35s ease, text-shadow 0.35s ease, transform 0.6s ease;
+}
+
+@keyframes viceTitleGlow {
+  0%,
+  100% {
+    text-shadow:
+      0 0 12px rgba(255, 45, 120, 0.4),
+      0 0 28px rgba(0, 220, 255, 0.1),
+      0 1px 10px rgba(0, 0, 0, 0.55);
+  }
+  50% {
+    text-shadow:
+      0 0 20px rgba(255, 45, 120, 0.65),
+      0 0 48px rgba(0, 220, 255, 0.18),
+      0 1px 10px rgba(0, 0, 0, 0.55);
+  }
+}
+
+:global([data-variant="miamiVice"][data-active="true"]) .titleVice {
+  animation: viceTitleGlow 2.9s ease-in-out infinite;
+}
+
+/* Miami Vice CTA: 热粉色底部高亮线，Raleway 细体 */
+.hintVice {
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  border-radius: 0;
+  border-color: transparent !important;
+  border-bottom-color: rgba(255, 45, 120, 0) !important;
+  border-style: solid;
+  border-width: 0 0 1px 0;
+  padding-left: 0;
+  padding-right: 0;
+  transition: color 0.38s ease, border-color 0.38s ease,
+    text-shadow 0.38s ease, opacity 0.38s ease,
+    transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:global([data-variant="miamiVice"][data-active="true"]) .hintVice {
+  color: rgba(255, 200, 228, 0.96);
+  border-bottom-color: rgba(255, 45, 120, 0.55) !important;
+  text-shadow: 0 0 12px rgba(255, 45, 120, 0.4);
+}

@@ -1,0 +1,138 @@
+/* Cyber 传送门：赛博 HUD — idle 干净；hover 扫描光带 + 霓虹呼吸（不做老电影闪） */
+
+.innerRoot {
+  isolation: isolate;
+}
+
+.mediaStack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.mediaBoost {
+  position: absolute;
+  inset: 0;
+}
+
+:global([data-variant="cyber"][data-active="true"]) .mediaBoost :global(.portalPoster),
+:global([data-variant="cyber"][data-active="true"]) .mediaBoost :global(.portalVideo) {
+  filter: saturate(1.22) contrast(1.08) brightness(1.06);
+  transition: filter 0.45s ease;
+}
+
+/* 纵向扫过的光带：像雷达 / 全息刷新 */
+.scanBeam {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: 22%;
+  top: -25%;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 255, 255, 0.03) 35%,
+    rgba(0, 240, 255, 0.14) 50%,
+    rgba(180, 100, 255, 0.1) 65%,
+    transparent 100%
+  );
+  filter: blur(10px);
+  mix-blend-mode: screen;
+}
+
+:global([data-variant="cyber"][data-active="true"]) .scanBeam {
+  opacity: 1;
+  animation: cyberSweep 2.6s linear infinite;
+}
+
+@keyframes cyberSweep {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(480%);
+  }
+}
+
+/* 叠层只做缓慢明暗呼吸，模拟城市霓虹反光 */
+@keyframes cyberBreath {
+  0%,
+  100% {
+    opacity: 0.06;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.dimCyber {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    rgba(0, 220, 255, 0.08) 0%,
+    rgba(140, 80, 255, 0.06) 45%,
+    rgba(20, 60, 140, 0.09) 100%
+  );
+  opacity: 0;
+}
+
+.dimCyberInactive {
+  opacity: 0;
+}
+
+.dimCyberActive {
+  animation: cyberBreath 2.5s ease-in-out infinite;
+}
+
+.contentCyber {
+  z-index: 4;
+}
+
+.titleCyber {
+  transition:
+    color 0.35s ease,
+    text-shadow 0.35s ease,
+    transform 0.6s ease;
+}
+
+@keyframes cyberTitleGlow {
+  0%,
+  100% {
+    text-shadow:
+      0 0 12px rgba(0, 240, 255, 0.28),
+      0 0 24px rgba(160, 100, 255, 0.15),
+      0 1px 10px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    text-shadow:
+      0 0 22px rgba(0, 240, 255, 0.5),
+      0 0 40px rgba(180, 120, 255, 0.28),
+      0 1px 10px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:global([data-variant="cyber"][data-active="true"]) .titleCyber {
+  animation: cyberTitleGlow 2.8s ease-in-out infinite;
+}
+
+/* Cyber CTA: 青色 HUD 边框 */
+.hintCyber {
+  font-family: "Courier New", Courier, monospace;
+  letter-spacing: 0.18em;
+  transition: color 0.38s ease, border-color 0.38s ease,
+    box-shadow 0.38s ease, opacity 0.38s ease,
+    transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:global([data-variant="cyber"][data-active="true"]) .hintCyber {
+  color: rgba(0, 240, 255, 0.96);
+  border-color: rgba(0, 240, 255, 0.52);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.38);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+}

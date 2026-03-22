@@ -1,0 +1,245 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,600&family=Raleway:wght@300;400&display=swap");
+
+/* ─── Root ─────────────────────────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 110% 60% at 50% 0%, rgba(90, 10, 50, 0.55) 0%, transparent 70%),
+    linear-gradient(168deg, #0a0614 0%, #12042a 45%, #0d0818 100%);
+  color: #ffe4f3;
+  padding: 0 0 5rem;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* subtle horizontal scanline texture */
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(255, 45, 120, 0.6) 3px,
+    rgba(255, 45, 120, 0.6) 4px
+  );
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ─── Hero ──────────────────────────────────────────────────────── */
+.hero {
+  padding-top: 5.5rem;
+  padding-bottom: 3.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem 3rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 4rem;
+  }
+}
+
+.heroImageWrap {
+  position: relative;
+}
+
+.heroImage {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 1px solid rgba(255, 45, 120, 0.25);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(255, 45, 120, 0.12),
+    0 0 80px rgba(160, 40, 220, 0.08);
+}
+
+.heroImageWrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    rgba(10, 6, 20, 0.7) 100%
+  );
+  pointer-events: none;
+}
+
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kicker {
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 0.68rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255, 45, 120, 0.65);
+  margin: 0;
+}
+
+.h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  line-height: 1.08;
+  margin: 0;
+  color: #ffe4f3;
+  text-shadow: 0 0 60px rgba(255, 45, 120, 0.2);
+}
+
+.tagline {
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  letter-spacing: 0.06em;
+  color: rgba(255, 200, 225, 0.72);
+  margin: 0;
+  max-width: 30rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0, 229, 255, 0.65);
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.7);
+  flex-shrink: 0;
+}
+
+/* ─── Divider ───────────────────────────────────────────────────── */
+.divider {
+  width: 3rem;
+  height: 1px;
+  background: linear-gradient(90deg, #ff2d78, rgba(0, 229, 255, 0.4));
+  margin: 0 0 3rem;
+  border: none;
+}
+
+/* ─── Scenes ────────────────────────────────────────────────────── */
+.scenes {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.scene {
+  position: relative;
+  padding: 2rem 0 2rem 2.5rem;
+  border-left: 1px solid rgba(255, 45, 120, 0.18);
+}
+
+.scene::before {
+  content: attr(data-act);
+  position: absolute;
+  left: -0.05rem;
+  top: 2rem;
+  transform: translateX(-50%);
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #0a0614;
+  border: 1px solid rgba(255, 45, 120, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 0.62rem;
+  color: rgba(255, 45, 120, 0.8);
+  text-align: center;
+  line-height: 1.6rem;
+}
+
+.scene:last-child {
+  border-left-color: transparent;
+}
+
+.scenePhase {
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(0, 229, 255, 0.55);
+  margin: 0 0 0.5rem;
+}
+
+.sceneTitle {
+  font-family: "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.15rem, 2.8vw, 1.5rem);
+  line-height: 1.25;
+  margin: 0 0 0.9rem;
+  color: #ffe4f3;
+}
+
+.sceneBody {
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 0.88rem;
+  line-height: 1.85;
+  color: rgba(255, 200, 220, 0.78);
+  margin: 0 0 1rem;
+  max-width: 42rem;
+}
+
+.sceneMeta {
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 45, 120, 0.45);
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 45, 120, 0.1);
+}
+
+/* ─── Footer ────────────────────────────────────────────────────── */
+.footerNote {
+  text-align: center;
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 45, 120, 0.3);
+  margin: 4rem 0 0;
+}

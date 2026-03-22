@@ -1,0 +1,174 @@
+.page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #e8e8e8;
+  padding: 2rem 1.25rem 4rem;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  animation: pageGrain 0.15s steps(2) infinite;
+}
+
+@keyframes pageGrain {
+  0% {
+    opacity: 0.18;
+  }
+  50% {
+    opacity: 0.26;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+.masthead {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.kicker {
+  font-family: "Cinzel", serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: rgba(200, 200, 200, 0.5);
+  margin: 0 0 0.75rem;
+}
+
+.h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.02em;
+  filter: grayscale(100%) contrast(1.15);
+}
+
+.tagline {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  margin: 1rem 0 0;
+  color: rgba(180, 180, 180, 0.85);
+}
+
+/* 与传送门同一套副标 + 场记 cue，避免页面与切片文案分叉 */
+.portalEcho {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin: 1.35rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.echoLabel {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(190, 190, 190, 0.75);
+}
+
+.echoCue {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.9);
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.panel {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(
+    145deg,
+    rgba(28, 28, 28, 0.95),
+    rgba(12, 12, 12, 0.98)
+  );
+  padding: 1.25rem 1.35rem;
+  position: relative;
+}
+
+.panel::before {
+  content: attr(data-scene);
+  position: absolute;
+  top: 0.65rem;
+  right: 0.85rem;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: rgba(160, 160, 160, 0.45);
+}
+
+.phase {
+  font-family: "Cinzel", serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.88);
+  margin: 0 0 0.5rem;
+}
+
+.phaseTitle {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.15rem;
+  margin: 0 0 0.75rem;
+  color: #fff;
+}
+
+.body {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  letter-spacing: 0.04em;
+  color: rgba(210, 210, 210, 0.88);
+  margin: 0;
+}
+
+.meta {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: rgba(150, 150, 150, 0.75);
+}
+
+.footerNote {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: rgba(140, 140, 140, 0.6);
+}

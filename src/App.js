@@ -1,52 +1,44 @@
-import React , { useRef } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import Nav from './nav/Nav';
-import About from './about/About';
-import Skills from './skills/Skills';
-import Projects from './projects/Projects';
-import Contact from './contact/Contact';
-import './styles/app.css';
-import Background from './background/Background';
-import PlayerStats from './playerStats/PlayerStats';
-import useSlideDirection from './hooks/useSlideDirection'; 
-import useDelayedContent from './hooks/useDelayedContent'; 
-import HenshinEffect from "./avatar/AvatarHuman";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
+import CyberUniPage from "./cyber-uni/CyberUniPage";
+import NoirUniPage from "./noir-uni/NoirUniPage";
+import PixelUniPage from "./pixel-uni/PixelUniPage";
+import MiamiViceUniPage from "./miami-vice-uni/MiamiViceUniPage";
 
 const App = () => {
-  const location = useLocation();
-  const slideDirection = useSlideDirection();
-
-  const showContent = useDelayedContent(4000); // Use a 4000ms delay
-
   return (
-    <div>
-       <HenshinEffect />
-      {/* Conditionally render Nav, Background, and PlayerStats after the delay */}
-      {showContent && <Nav />}
-      <Background play={showContent} />
-      {/* Transition Group for page animations */}
-      <TransitionGroup>
-        <CSSTransition
-          key={location.pathname}
-          classNames={slideDirection} // Use slideDirection from the custom hook
-          timeout={500} // Match with CSS duration
-          unmountOnExit
-        >
-          <div className="page-wrapper">
-            <Routes location={location}>
-              <Route path="/" element={showContent && <About />} />
-              <Route path="/skills" element={showContent && <Skills />} />
-              <Route path="/projects" element={showContent && <Projects />} />
-              <Route path="/contact" element={showContent && <Contact />} />
-            </Routes>
-          </div>
-        </CSSTransition>
-      </TransitionGroup>
-
-      {/* Conditionally render PlayerStats after the delay */}
-      {showContent && <PlayerStats />}
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/cyber-uni/*" element={<CyberUniPage />} />
+      <Route path="/noir-uni" element={<NoirUniPage />} />
+      <Route
+        path="/theme-2"
+        element={<Navigate to="/noir-uni" replace />}
+      />
+      <Route path="/pixel-uni" element={<PixelUniPage />} />
+      <Route
+        path="/theme-3"
+        element={<Navigate to="/pixel-uni" replace />}
+      />
+      <Route path="/miami-vice" element={<MiamiViceUniPage />} />
+      <Route
+        path="/theme-4"
+        element={<Navigate to="/miami-vice" replace />}
+      />
+      <Route
+        path="/skills"
+        element={<Navigate to="/cyber-uni/skills" replace />}
+      />
+      <Route
+        path="/projects"
+        element={<Navigate to="/cyber-uni/projects" replace />}
+      />
+      <Route
+        path="/contact"
+        element={<Navigate to="/cyber-uni/contact" replace />}
+      />
+    </Routes>
   );
 };
 

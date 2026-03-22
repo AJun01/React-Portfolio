@@ -8,10 +8,10 @@ https://ajun01.github.io/React-Portfolio
 
 ## Preview
 
-![Preview1](src/assets/preview1.jpg)
-![Preview2](src/assets/preview2.jpg)
-![Preview3](src/assets/preview3.jpg)
-![Preview4](src/assets/preview4.jpg)
+![Preview1](src/assets/cyber/preview1.jpg)
+![Preview2](src/assets/cyber/preview2.jpg)
+![Preview3](src/assets/cyber/preview3.jpg)
+![Preview4](src/assets/cyber/preview4.jpg)
 
 ## Table of Contents
 

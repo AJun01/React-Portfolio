@@ -1,0 +1,176 @@
+/* Pixel 传送门：复古显像管 — 磷光慢呼吸 + 扫描线漂移 + 内边框脉冲（不做放映机闪） */
+
+.innerRoot {
+  isolation: isolate;
+}
+
+.mediaStack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.mediaBoost {
+  position: absolute;
+  inset: 0;
+}
+
+.mediaBoost :global(.portalPoster),
+.mediaBoost :global(.portalVideo) {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+:global([data-variant="pixel"][data-active="true"]) .mediaBoost :global(.portalPoster),
+:global([data-variant="pixel"][data-active="true"]) .mediaBoost :global(.portalVideo) {
+  filter: saturate(1.15) contrast(1.1) brightness(1.05);
+  transition: filter 0.45s ease;
+}
+
+/* 扫描线整体极慢下移，像 CRT 场扫描 */
+.scanOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.14) 2px,
+    rgba(0, 0, 0, 0.14) 4px
+  );
+  background-size: 100% 8px;
+  mix-blend-mode: multiply;
+  transition: opacity 0.4s ease;
+}
+
+:global([data-variant="pixel"][data-active="true"]) .scanOverlay {
+  opacity: 0.32;
+  animation: pixelScanDrift 10s linear infinite;
+}
+
+@keyframes pixelScanDrift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 32px;
+  }
+}
+
+/* 显像管边框：慢脉冲，像待机绿灯 */
+.bezelGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 0 2px rgba(94, 250, 250, 0);
+}
+
+:global([data-variant="pixel"][data-active="true"]) .bezelGlow {
+  opacity: 1;
+  animation: bezelPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes bezelPulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 2px rgba(94, 250, 250, 0.12),
+      inset 0 0 20px rgba(0, 40, 35, 0.15);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 2px rgba(120, 255, 220, 0.42),
+      inset 0 0 36px rgba(40, 120, 100, 0.22);
+  }
+}
+
+/* 淡绿磷光层：很慢的呼吸，不是频闪 */
+@keyframes phosphorBreath {
+  0%,
+  100% {
+    opacity: 0.05;
+  }
+  50% {
+    opacity: 0.18;
+  }
+}
+
+.dimPixel {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 45%,
+    rgba(100, 255, 200, 0.07) 0%,
+    rgba(40, 120, 200, 0.05) 55%,
+    rgba(10, 40, 55, 0.08) 100%
+  );
+  opacity: 0;
+}
+
+.dimPixelInactive {
+  opacity: 0;
+}
+
+.dimPixelActive {
+  animation: phosphorBreath 3.2s ease-in-out infinite;
+}
+
+.contentPixel {
+  z-index: 4;
+}
+
+.titlePixel {
+  transition:
+    color 0.35s ease,
+    text-shadow 0.35s ease,
+    transform 0.6s ease;
+}
+
+@keyframes pixelTitlePhosphor {
+  0%,
+  100% {
+    text-shadow:
+      0 0 10px rgba(94, 250, 250, 0.3),
+      0 0 22px rgba(60, 200, 255, 0.15),
+      0 1px 10px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    text-shadow:
+      0 0 18px rgba(120, 255, 230, 0.55),
+      0 0 32px rgba(80, 220, 200, 0.25),
+      0 1px 10px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:global([data-variant="pixel"][data-active="true"]) .titlePixel {
+  animation: pixelTitlePhosphor 3s ease-in-out infinite;
+}
+
+/* Pixel CTA: 像素化边框（阶梯 box-shadow 模拟无圆角像素框） */
+.hintPixel {
+  font-family: "VT323", monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  transition: color 0.38s ease, border-color 0.38s ease,
+    box-shadow 0.38s ease, opacity 0.38s ease,
+    transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  border-radius: 0;
+}
+
+:global([data-variant="pixel"][data-active="true"]) .hintPixel {
+  color: rgba(100, 255, 220, 0.96);
+  border-color: rgba(94, 250, 250, 0.5);
+  text-shadow: 0 0 10px rgba(94, 250, 250, 0.4);
+  box-shadow:
+    1px 0 0 rgba(94, 250, 250, 0.3),
+    -1px 0 0 rgba(94, 250, 250, 0.3),
+    0 1px 0 rgba(94, 250, 250, 0.3),
+    0 -1px 0 rgba(94, 250, 250, 0.3);
+}

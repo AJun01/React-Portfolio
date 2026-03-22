@@ -1,0 +1,47 @@
+#bg {
+    object-fit: cover; /* keeps aspect ratio while covering the screen */
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -5;
+}
+
+/* Overlay to darken background */
+.shadow-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -4;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Adjustments for tablets and mobile screens */
+@media (max-width: 1024px) {
+    #bg {
+        object-fit: cover;
+        /* limits max dimensions for better scaling on tablets */
+        max-width: 100vw;
+        max-height: 100vh;
+    }
+
+    .shadow-overlay {
+        background-color: rgba(0, 0, 0, 0.6); /* slightly darker for readability */
+    }
+}
+
+@media (max-width: 700px) {
+    #bg {
+        object-fit: cover;
+        /* keeps the video from stretching on small screens */
+        max-width: 100vw;
+        max-height: 100vh;
+    }
+
+    .shadow-overlay {
+        background-color: rgba(0, 0, 0, 0.7); /* even darker on very small screens */
+    }
+}

@@ -1,0 +1,211 @@
+/* Film Noir — 第二传送门：灰阶、颗粒、放映机闪烁 */
+
+/* 勿加 position:relative，否则会覆盖 skewInner 的 absolute，容器塌缩 */
+.innerRoot {
+  isolation: isolate;
+}
+
+/* 滤镜只包底图+视频，勿包整层：父级 filter 易导致子项绘制边界变窄，出现两侧「灰条」 */
+.mediaStack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.filteredBackdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  filter: grayscale(100%) contrast(1.2);
+}
+
+/* 细腻噪点层：SVG 纹理 + 混合模式；opacity 微动模拟胶片活性 */
+.grainOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.65'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  animation: grainDrift 0.12s steps(3) infinite;
+}
+
+@keyframes grainDrift {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.34;
+  }
+  33% {
+    transform: translate(-2px, 1px);
+    opacity: 0.42;
+  }
+  66% {
+    transform: translate(1px, -1px);
+    opacity: 0.38;
+  }
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.36;
+  }
+}
+
+/* 放映机闪烁：在已偏亮的蒙版上微调透明度，不靠整体变暗再 hover 变亮 */
+@keyframes flicker {
+  0% {
+    opacity: 0.92;
+  }
+  8% {
+    opacity: 0.48;
+  }
+  14% {
+    opacity: 0.88;
+  }
+  22% {
+    opacity: 0.52;
+  }
+  28% {
+    opacity: 0.84;
+  }
+  36% {
+    opacity: 0.58;
+  }
+  44% {
+    opacity: 0.9;
+  }
+  52% {
+    opacity: 0.5;
+  }
+  60% {
+    opacity: 0.86;
+  }
+  68% {
+    opacity: 0.55;
+  }
+  76% {
+    opacity: 0.82;
+  }
+  84% {
+    opacity: 0.6;
+  }
+  92% {
+    opacity: 0.88;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.dimFilmNoir {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.dimFilmNoirInactive {
+  opacity: 1;
+}
+
+.dimFilmNoirActive {
+  animation: flicker 0.48s ease-in-out infinite;
+}
+
+.contentFilmNoir {
+  z-index: 4;
+}
+
+/* 类别标签：idle 可见但极小，hover 微放大 */
+.labelNoir {
+  font-family: "Cinzel", "Times New Roman", serif;
+  font-size: clamp(0.48rem, 0.85vw, 0.6rem);
+  letter-spacing: 0.44em;
+  text-transform: uppercase;
+  color: rgba(240, 240, 240, 0.55);
+  margin: 0 0 0.3rem;
+  transition: color 0.35s ease, opacity 0.35s ease;
+}
+
+:global([data-variant="filmNoir"][data-active="true"]) .labelNoir {
+  color: rgba(240, 240, 240, 0.82);
+}
+
+/* idle: 小标题在底部；hover: 向上放大 */
+.titleNoir {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(0.8rem, 1.7vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 0 1px #000, 0 2px 8px rgba(0, 0, 0, 0.55);
+  margin: 0;
+  line-height: 1.15;
+  transform-origin: bottom center;
+  transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.35s ease, text-shadow 0.35s ease;
+}
+
+:global([data-variant="filmNoir"][data-active="true"]) .titleNoir {
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 0 1px #000, 0 2px 12px rgba(0, 0, 0, 0.4);
+  transform: scale(1.16) translateY(-0.15em);
+}
+
+/* 副标题 idle 隐藏，hover 滑入 */
+.subtitleNoir {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.55rem, 1.1vw, 0.72rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(220, 220, 220, 0.85);
+  margin: 0.45rem 0 0;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:global([data-variant="filmNoir"][data-active="true"]) .subtitleNoir {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Noir CTA: 下划线风格，无硬边框 */
+.hintNoir {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.54rem, 0.95vw, 0.68rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin: 0.7rem 0 0;
+  padding: 0.28em 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  white-space: nowrap;
+  color: rgba(180, 180, 180, 0);
+  border-bottom: 1px solid rgba(255, 255, 255, 0);
+  opacity: 0;
+  transform: translateY(9px);
+  transition:
+    color 0.38s ease,
+    border-color 0.38s ease,
+    opacity 0.38s ease,
+    transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:global([data-variant="filmNoir"][data-active="true"]) .hintNoir {
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom-color: rgba(255, 255, 255, 0.38);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hintNoirArrow {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:global([data-variant="filmNoir"][data-active="true"]) .hintNoirArrow {
+  transform: translateX(4px);
+}

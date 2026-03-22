@@ -1,0 +1,83 @@
+/* Image Transition Styles */
+.transition-image {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .transition-image.hidden {
+    opacity: 0;
+  }
+  
+  /* Enhanced Light Effect Styles */
+  .light-effect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 50px; /* Initial size */
+    height: 50px; /* Initial size */
+    background: radial-gradient(circle, rgba(255,255,255,1) 0%, #7ce7ff 40%, #25afce 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    filter: blur(0px);
+    opacity: 0;
+    animation: lightEffectScale 2s forwards, lightEffectOpacity 1s forwards;
+    z-index: 999;
+  }
+  
+  /* Keyframe for scaling and blurring */
+  @keyframes lightEffectScale {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+      filter: blur(10px);
+    }
+    70% {
+      transform: translate(-50%, -50%) scale(50); /* Increased scale to cover screen */
+      filter: blur(0px);
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(100); /* Further increased scale */
+      filter: blur(0px);
+    }
+  }
+  
+  /* Keyframe for opacity */
+  @keyframes lightEffectOpacity {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* White Overlay Styles */
+  .white-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 1;
+    z-index: 999;
+    animation: fadeOutWhiteOverlay 1s forwards;
+  }
+  
+  /* Fade-out animation for white overlay */
+  @keyframes fadeOutWhiteOverlay {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  
+  /* Optional: Prevent body scroll during animations */
+  body {
+    overflow: hidden;
+  }
+  
