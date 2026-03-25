@@ -1,14 +1,18 @@
 {
   "files": {
-    "main.css": "/React-Portfolio/static/css/main.8469cbec.css",
-    "main.js": "/React-Portfolio/static/js/main.db40d4bf.js",
+    "main.css": "/React-Portfolio/static/css/main.23460cf9.css",
+    "main.js": "/React-Portfolio/static/js/main.d52a5562.js",
+    "static/media/opening_scrub.mp4": "/React-Portfolio/static/media/opening_scrub.7179ac77382c938449bc.mp4",
+    "static/media/hero.png": "/React-Portfolio/static/media/hero.e50bbf31e136b8df5f5b.png",
     "static/media/portal.png": "/React-Portfolio/static/media/portal.2efce51051f26a02cba6.png",
-    "static/media/bg-universe.mp4": "/React-Portfolio/static/media/bg-universe.9b3324e48bb969a307dc.mp4",
-    "static/media/avatar.png": "/React-Portfolio/static/media/avatar.639010d8671e6e6fbff8.png",
-    "static/media/project-2.png": "/React-Portfolio/static/media/project-2.bdcc3ebd6a1b9b68cae0.png",
-    "static/media/project-3.png": "/React-Portfolio/static/media/project-3.d8fe36044056a72b1e64.png",
+    "static/media/portal.mp4": "/React-Portfolio/static/media/portal.2b44bf66251d02b4fca0.mp4",
+    "static/media/progressLogo.svg": "/React-Portfolio/static/media/progressLogo.102d895c33bb3b735fa4e95144b72575.svg",
     "static/media/Fast_Serif.ttf": "/React-Portfolio/static/media/Fast_Serif.a6f6111ed6066953463c.ttf",
-    "static/media/project-1.png": "/React-Portfolio/static/media/project-1.d3c0e9d0d7b7df612c52.png",
+    "static/media/1.jpg": "/React-Portfolio/static/media/1.bf4eb801314aa9900729.jpg",
+    "static/media/wowpc.png": "/React-Portfolio/static/media/wowpc.aeae1cd81d950231b4b7.png",
+    "static/media/1.png": "/React-Portfolio/static/media/1.5de42405bd7a5becc523.png",
+    "static/media/mosaic.png": "/React-Portfolio/static/media/mosaic.de189a6643f3a747d187.png",
+    "static/media/2.jpg": "/React-Portfolio/static/media/2.cad4db3f47505fd065d4.jpg",
     "static/media/envelope.png": "/React-Portfolio/static/media/envelope.458d6d247b8f55c768bf.png",
     "static/media/blade.png": "/React-Portfolio/static/media/blade.c8350884b8373e13cf00.png",
     "static/media/helmet.png": "/React-Portfolio/static/media/helmet.52cac95b70d5246c8942.png",
@@ -16,11 +20,11 @@
     "static/media/front.png": "/React-Portfolio/static/media/front.5f800348c17f3fb137ed.png",
     "static/media/back.png": "/React-Portfolio/static/media/back.8a7b1ae768beb2ae57c4.png",
     "index.html": "/React-Portfolio/index.html",
-    "main.8469cbec.css.map": "/React-Portfolio/static/css/main.8469cbec.css.map",
-    "main.db40d4bf.js.map": "/React-Portfolio/static/js/main.db40d4bf.js.map"
+    "main.23460cf9.css.map": "/React-Portfolio/static/css/main.23460cf9.css.map",
+    "main.d52a5562.js.map": "/React-Portfolio/static/js/main.d52a5562.js.map"
   },
   "entrypoints": [
-    "static/css/main.8469cbec.css",
-    "static/js/main.db40d4bf.js"
+    "static/css/main.23460cf9.css",
+    "static/js/main.d52a5562.js"
   ]
 }
