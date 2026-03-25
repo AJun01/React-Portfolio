@@ -1,0 +1,269 @@
+/* ── Design tokens ─────────────────────────────────────────────── */
+:root {
+  --hud-cyan:       rgba(0, 220, 255, 0.75);
+  --hud-cyan-dim:   rgba(0, 220, 255, 0.3);
+  --hud-cyan-glow:  rgba(0, 220, 255, 0.5);
+  --hud-pink:       rgba(255, 80, 200, 0.6);
+  --hud-line:       2px;
+  --hud-margin:     1.2rem;
+  --corner-arm:     2.8rem;   /* length of each L-bracket arm */
+}
+
+/* ── Root overlay ──────────────────────────────────────────────── */
+.frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 150;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN CORNER BRACKETS
+   ═══════════════════════════════════════════════════════════════ */
+.corner {
+  position: absolute;
+  width:  var(--corner-arm);
+  height: var(--corner-arm);
+  animation: cornerPulse 3.5s ease-in-out infinite;
+}
+
+/* top-left */
+.cornerTL {
+  top:  var(--hud-margin);
+  left: var(--hud-margin);
+  border-top:  var(--hud-line) solid var(--hud-cyan);
+  border-left: var(--hud-line) solid var(--hud-cyan);
+  box-shadow:
+    -3px -3px 10px var(--hud-cyan-glow),
+    inset 3px 3px 6px rgba(0, 220, 255, 0.06);
+}
+
+/* top-right */
+.cornerTR {
+  top:   var(--hud-margin);
+  right: var(--hud-margin);
+  border-top:   var(--hud-line) solid var(--hud-cyan);
+  border-right: var(--hud-line) solid var(--hud-cyan);
+  box-shadow:
+    3px -3px 10px var(--hud-cyan-glow),
+    inset -3px 3px 6px rgba(0, 220, 255, 0.06);
+}
+
+/* bottom-left */
+.cornerBL {
+  bottom: calc(var(--hud-margin) + 3.5rem); /* above progress bar */
+  left:   var(--hud-margin);
+  border-bottom: var(--hud-line) solid var(--hud-cyan);
+  border-left:   var(--hud-line) solid var(--hud-cyan);
+  box-shadow:
+    -3px 3px 10px var(--hud-cyan-glow),
+    inset 3px -3px 6px rgba(0, 220, 255, 0.06);
+}
+
+/* bottom-right */
+.cornerBR {
+  bottom: calc(var(--hud-margin) + 3.5rem);
+  right:  var(--hud-margin);
+  border-bottom: var(--hud-line) solid var(--hud-cyan);
+  border-right:  var(--hud-line) solid var(--hud-cyan);
+  box-shadow:
+    3px 3px 10px var(--hud-cyan-glow),
+    inset -3px -3px 6px rgba(0, 220, 255, 0.06);
+}
+
+@keyframes cornerPulse {
+  0%, 100% { opacity: 0.75; }
+  50%       { opacity: 1;    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLAYER-STATS SURROUND FRAME
+   Covers BackToUniverses (top:1.1rem,left:1.1rem)
+   and PlayerStats       (top:3rem,   left:3rem, 15rem × 4rem)
+   ═══════════════════════════════════════════════════════════════ */
+.statsFrame {
+  position: absolute;
+  top:    0.5rem;
+  left:   0.5rem;
+  /* right edge: 3rem offset + 15rem width + 1.5rem padding */
+  width:  20.5rem;
+  /* bottom edge: 3rem offset + 4rem height + 1.5rem padding */
+  height: 9rem;
+
+  /* top + left border only — open "panel" feel */
+  border-top:  var(--hud-line) solid var(--hud-cyan);
+  border-left: var(--hud-line) solid var(--hud-cyan);
+
+  /* bottom-right corner accent (short L-bracket) */
+  outline: none;
+
+  box-shadow:
+    -2px -2px 14px var(--hud-cyan-glow),
+    inset 2px 2px 8px rgba(0, 220, 255, 0.04);
+
+  animation: cornerPulse 4s ease-in-out infinite;
+}
+
+/* Bottom-right mini bracket of the stats frame */
+.statsFrame::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right:  0;
+  width:  1.6rem;
+  height: 1.6rem;
+  border-bottom: var(--hud-line) solid var(--hud-cyan-dim);
+  border-right:  var(--hud-line) solid var(--hud-cyan-dim);
+}
+
+/* Diagonal cut decoration — sits at bottom-right of the top border */
+.statsFrameCut {
+  position: absolute;
+  top:   -2px;          /* on the border line */
+  right: 0;
+  width: 12px;
+  height: 12px;
+  /* 45° cut using a rotated pseudo-box */
+  background: transparent;
+  border-top:   2px solid var(--hud-cyan);
+  transform-origin: top right;
+  transform: rotate(-45deg) translateX(4px);
+  opacity: 0.7;
+}
+
+/* "SYS · ONLINE" badge — top-right of the stats frame */
+.statusBadge {
+  position: absolute;
+  top:   -0.9rem;
+  right: 2rem;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.46rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0, 220, 255, 0.6);
+  background: rgba(0, 5, 18, 0.85);
+  padding: 0 0.4em;
+  white-space: nowrap;
+}
+
+/* Tick marks along the top arm */
+.topTicks {
+  position: absolute;
+  top: -1px;
+  left: 21rem;    /* start just after the stats content */
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding-top: 3px;
+}
+
+.tick {
+  display: block;
+  width:  1px;
+  height: 5px;
+  background: var(--hud-cyan-dim);
+}
+
+.tick:nth-child(4) {
+  height: 9px;         /* taller every 4th tick */
+  background: var(--hud-cyan);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOP SCANNING LINE
+   ═══════════════════════════════════════════════════════════════ */
+.scanLine {
+  position: absolute;
+  top:    var(--hud-margin);
+  left:   -10%;
+  width:  18%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 220, 255, 0.5) 40%,
+    rgba(0, 220, 255, 0.9) 60%,
+    transparent 100%
+  );
+  box-shadow: 0 0 8px rgba(0, 220, 255, 0.5);
+  animation: scanSweep 8s linear infinite;
+}
+
+@keyframes scanSweep {
+  0%   { left: -20%; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { left: 110%; opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RIGHT-SIDE VERTICAL ACCENT RAIL
+   ═══════════════════════════════════════════════════════════════ */
+.rightRail {
+  position: absolute;
+  top:    12%;
+  right:  var(--hud-margin);
+  bottom: calc(10% + 3.5rem);
+  width:  1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--hud-cyan-dim) 15%,
+    var(--hud-cyan-dim) 85%,
+    transparent 100%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.railLabel {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.38rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 220, 255, 0.35);
+  white-space: nowrap;
+  /* rotate 90° to read along the rail */
+  transform: rotate(90deg);
+  transform-origin: center center;
+}
+
+.railTick {
+  display: block;
+  width:  5px;
+  height: 1px;
+  background: var(--hud-cyan-dim);
+  flex-shrink: 0;
+}
+
+.railTick:nth-child(3) {
+  width: 10px;
+  background: var(--hud-cyan);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOTTOM-LEFT COORDINATE READOUT
+   ═══════════════════════════════════════════════════════════════ */
+.coordReadout {
+  position: absolute;
+  bottom: calc(var(--hud-margin) + 3.5rem);
+  left:   calc(var(--hud-margin) + 0.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.42rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(0, 220, 255, 0.3);
+  animation: coordBlink 6s ease-in-out infinite;
+}
+
+@keyframes coordBlink {
+  0%, 90%, 100% { opacity: 0.4; }
+  95%            { opacity: 0.9; }
+}

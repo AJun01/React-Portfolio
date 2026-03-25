@@ -1,6 +1,6 @@
 .project-menu {
     width: 45rem;
-    position: fixed;
+    position: absolute;
     display: flex;
     top: 25%;
     left: 50%;

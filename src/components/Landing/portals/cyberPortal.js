@@ -3,6 +3,7 @@
  * mergePortal 会再叠一层 portalSliceDefaults；下面已写全量字段，改数字只动本列即可。
  */
 import cyberPortalPoster from "../../../assets/cyber/portal.png";
+import cyberPortalVideo from "../../../assets/cyber/portal.mp4";
 import { mergePortal } from "./portalSliceDefaults";
 
 export const cyberPortal = mergePortal({
@@ -27,8 +28,8 @@ export const cyberPortal = mergePortal({
   posterAlignX: 50,
   posterAlignY: 100,
   posterBleedScale: 1,
-  videoSrc: undefined,
-  videoObjectPosition: undefined,
+  videoSrc: cyberPortalVideo,
+  videoObjectPosition: "50% 100%",
 
   // hover 时由 CyberPortalLanding 叠层做闪烁/增色，idle 不盖渐变
   accent: undefined,

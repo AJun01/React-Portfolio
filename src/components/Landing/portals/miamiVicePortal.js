@@ -3,6 +3,7 @@
  * mergePortal 会再叠一层 portalSliceDefaults；下面已写全量字段，改数字只动本列即可。
  */
 import miamiVicePortalPoster from "../../../assets/MiamiVice/portal.png";
+import miamiVicePortalVideo from "../../../assets/MiamiVice/portal.mp4";
 import { MIAMI_VICE } from "../../../miami-vice-uni/content/miamiVice";
 import { mergePortal } from "./portalSliceDefaults";
 
@@ -27,8 +28,8 @@ export const miamiVicePortal = mergePortal({
   posterAlignX: MIAMI_VICE.posterAlignX,
   posterAlignY: MIAMI_VICE.posterAlignY,
   posterBleedScale: 1,
-  videoSrc: undefined,
-  videoObjectPosition: undefined,
+  videoSrc: miamiVicePortalVideo,
+  videoObjectPosition: "50% 40%",
 
   // hover 时由 MiamiVicePortalLanding 做日落扫光效果，idle 无渐变
   accent: undefined,

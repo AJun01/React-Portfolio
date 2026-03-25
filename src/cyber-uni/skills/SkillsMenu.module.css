@@ -1,0 +1,207 @@
+/* ══════════════════════════════════════════════════════════════
+   SKILLS PANEL — 2 × 2 cyberpunk grid
+   ══════════════════════════════════════════════════════════════ */
+
+.root {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4.5rem 5vw 5rem 3vw;  /* ← TUNE: 左边 2vw，右边 8vw → 整体左移 */
+  gap: 1.2rem;
+}
+
+/* ── Section header ──────────────────────────────────────────── */
+.header {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: rgba(0, 220, 255, 0.5);
+  text-transform: uppercase;
+  margin: 0;
+  align-self: flex-start;
+}
+
+/* ── 2 × 2 grid ──────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: clamp(0.8rem, 1.5vw, 1.6rem);
+  width: 100%;
+}
+
+/* ── Individual card — hidden by default, slides up on visible ── */
+.column {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 220, 255, 0.15);
+  background: rgba(0, 8, 22, 0.65);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(2rem);
+  transition:
+    opacity   0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.columnVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Column header bar ───────────────────────────────────────── */
+.columnHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid rgba(0, 220, 255, 0.1);
+  background: rgba(0, 220, 255, 0.04);
+}
+
+.columnIcon {
+  width: 1.2rem;
+  height: 1.2rem;
+  object-fit: contain;
+  filter: drop-shadow(0 0 4px rgba(0, 220, 255, 0.5));
+}
+
+.columnSvgIcon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+.columnLabel {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.48rem, 0.75vw, 0.62rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* ── Skill rows ──────────────────────────────────────────────── */
+.skillList {
+  display: flex;
+  flex-direction: column;
+  padding: 0.3rem 0;
+}
+
+.skillRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.9rem;
+  gap: 0.8rem;
+  border-bottom: 1px solid rgba(0, 220, 255, 0.05);
+  transition: background 0.2s;
+}
+
+.skillRow:last-child { border-bottom: none; }
+
+.skillName {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.48rem, 0.72vw, 0.6rem);
+  color: rgba(190, 225, 255, 0.75);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  min-width: 4.5rem;
+}
+
+/* ── Level bar (6 segments) ──────────────────────────────────── */
+.levelBar {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.segment {
+  width: clamp(1.2rem, 1.8vw, 2rem);
+  height: 0.45rem;
+  border-radius: 1px;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.segmentEmpty {
+  background: rgba(0, 80, 100, 0.4);
+  border: 1px solid rgba(0, 220, 255, 0.1);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COLOR THEMES — one per column
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Cyan (Front-End) ─────────────────────────────────────────── */
+.col_cyan { border-color: rgba(0, 220, 255, 0.15); }
+.col_cyan .columnHeader { background: rgba(0, 220, 255, 0.04); border-bottom-color: rgba(0, 220, 255, 0.1); }
+.col_cyan .columnLabel  { color: rgba(0, 220, 255, 0.85); }
+.col_cyan .columnIcon   { filter: drop-shadow(0 0 4px rgba(0, 220, 255, 0.5)); }
+.col_cyan .skillRow:hover { background: rgba(0, 220, 255, 0.04); }
+
+.col_cyan .segmentFilled {
+  background: linear-gradient(180deg, #25afce, #7ce7ff);
+  box-shadow: 0 0 6px rgba(0, 220, 255, 0.5), 0 0 10px rgba(0, 220, 255, 0.25);
+}
+@keyframes chargeUpCyan {
+  0%   { background: rgba(0, 80, 100, 0.4); opacity: 0.5; box-shadow: none; }
+  50%  { background: linear-gradient(180deg, #25afce, #7ce7ff); opacity: 1; box-shadow: 0 0 10px rgba(0, 220, 255, 0.6); }
+  100% { background: linear-gradient(180deg, #25afce, #7ce7ff); opacity: 1; box-shadow: 0 0 6px rgba(0, 220, 255, 0.5); }
+}
+.col_cyan .segmentCharging { animation: chargeUpCyan 0.5s forwards; }
+
+/* ── Pink (Back-End) ─────────────────────────────────────────── */
+.col_pink { border-color: rgba(255, 80, 200, 0.15); }
+.col_pink .columnHeader { background: rgba(255, 80, 200, 0.04); border-bottom-color: rgba(255, 80, 200, 0.1); }
+.col_pink .columnLabel  { color: rgba(255, 80, 200, 0.85); }
+.col_pink .columnSvgIcon { color: rgba(255, 80, 200, 0.8); filter: drop-shadow(0 0 4px rgba(255, 80, 200, 0.5)); }
+.col_pink .skillRow:hover { background: rgba(255, 80, 200, 0.04); }
+
+.col_pink .segmentFilled {
+  background: linear-gradient(180deg, #c040a0, #ff80d0);
+  box-shadow: 0 0 6px rgba(255, 80, 200, 0.5), 0 0 10px rgba(255, 80, 200, 0.25);
+}
+@keyframes chargeUpPink {
+  0%   { background: rgba(80, 0, 60, 0.4); opacity: 0.5; box-shadow: none; }
+  50%  { background: linear-gradient(180deg, #c040a0, #ff80d0); opacity: 1; box-shadow: 0 0 10px rgba(255, 80, 200, 0.6); }
+  100% { background: linear-gradient(180deg, #c040a0, #ff80d0); opacity: 1; box-shadow: 0 0 6px rgba(255, 80, 200, 0.5); }
+}
+.col_pink .segmentCharging { animation: chargeUpPink 0.5s forwards; }
+
+/* ── Amber (Cloud & DevOps) ──────────────────────────────────── */
+.col_amber { border-color: rgba(255, 160, 30, 0.15); }
+.col_amber .columnHeader { background: rgba(255, 160, 30, 0.04); border-bottom-color: rgba(255, 160, 30, 0.1); }
+.col_amber .columnLabel  { color: rgba(255, 160, 30, 0.85); }
+.col_amber .columnSvgIcon { color: rgba(255, 160, 30, 0.8); filter: drop-shadow(0 0 4px rgba(255, 160, 30, 0.5)); }
+.col_amber .skillRow:hover { background: rgba(255, 160, 30, 0.04); }
+
+.col_amber .segmentFilled {
+  background: linear-gradient(180deg, #c07010, #ffb040);
+  box-shadow: 0 0 6px rgba(255, 160, 30, 0.5), 0 0 10px rgba(255, 160, 30, 0.25);
+}
+@keyframes chargeUpAmber {
+  0%   { background: rgba(80, 40, 0, 0.4); opacity: 0.5; box-shadow: none; }
+  50%  { background: linear-gradient(180deg, #c07010, #ffb040); opacity: 1; box-shadow: 0 0 10px rgba(255, 160, 30, 0.6); }
+  100% { background: linear-gradient(180deg, #c07010, #ffb040); opacity: 1; box-shadow: 0 0 6px rgba(255, 160, 30, 0.5); }
+}
+.col_amber .segmentCharging { animation: chargeUpAmber 0.5s forwards; }
+
+/* ── Violet (AI & Agents) ────────────────────────────────────── */
+.col_violet { border-color: rgba(160, 80, 255, 0.15); }
+.col_violet .columnHeader { background: rgba(160, 80, 255, 0.04); border-bottom-color: rgba(160, 80, 255, 0.1); }
+.col_violet .columnLabel  { color: rgba(160, 80, 255, 0.9); }
+.col_violet .columnSvgIcon { color: rgba(160, 80, 255, 0.8); filter: drop-shadow(0 0 4px rgba(160, 80, 255, 0.5)); }
+.col_violet .skillRow:hover { background: rgba(160, 80, 255, 0.04); }
+
+.col_violet .segmentFilled {
+  background: linear-gradient(180deg, #8030d0, #c090ff);
+  box-shadow: 0 0 6px rgba(160, 80, 255, 0.5), 0 0 10px rgba(160, 80, 255, 0.25);
+}
+@keyframes chargeUpViolet {
+  0%   { background: rgba(50, 0, 80, 0.4); opacity: 0.5; box-shadow: none; }
+  50%  { background: linear-gradient(180deg, #8030d0, #c090ff); opacity: 1; box-shadow: 0 0 10px rgba(160, 80, 255, 0.6); }
+  100% { background: linear-gradient(180deg, #8030d0, #c090ff); opacity: 1; box-shadow: 0 0 6px rgba(160, 80, 255, 0.5); }
+}
+.col_violet .segmentCharging { animation: chargeUpViolet 0.5s forwards; }

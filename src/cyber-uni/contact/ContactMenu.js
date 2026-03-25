@@ -1,151 +1,132 @@
-import React, { useState } from 'react'
-import emailjs from "emailjs-com";
+import React, { useState } from 'react';
+import emailjs from 'emailjs-com';
 import DOMPurify from 'dompurify';
-
+import styles from './ContactMenu.module.css';
 
 export default function ContactMenu() {
-    const initialState = {
-        name:"", 
-        email:"", 
-        message:"", 
+  const initial = { name: '', email: '', message: '' };
+  const [formData,  setFormData]  = useState(initial);
+  const [errors,    setErrors]    = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSent,    setIsSent]    = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!formData.name.trim())    e.name    = 'NAME REQUIRED';
+    if (!formData.email.trim())   e.email   = 'EMAIL REQUIRED';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+                                  e.email   = 'INVALID FORMAT';
+    if (!formData.message.trim()) e.message = 'MESSAGE REQUIRED';
+    return e;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
+    setIsLoading(true);
+    const payload = {
+      name:    'Name: '    + DOMPurify.sanitize(formData.name),
+      email:   'Email: '   + DOMPurify.sanitize(formData.email),
+      message: 'Message: ' + DOMPurify.sanitize(formData.message),
     };
 
-    const [formData, setFormData] = useState(initialState);
-    const [errors, setErrors] = useState({});
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSent, setIsSent] = useState(false);
+    emailjs
+      .send(
+        process.env.REACT_APP_EMAILJS_SERVICE_ID,
+        process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+        payload,
+        process.env.REACT_APP_EMAILJS_USER_ID,
+      )
+      .then(() => { setFormData(initial); setErrors({}); setIsSent(true); })
+      .catch((err) => console.error('Email failed:', err))
+      .finally(() => setIsLoading(false));
+  };
 
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            [name]: value, 
-        }));
-    };
+  return (
+    <div className={styles.panel}>
+      <div className={styles.card}>
+        <header className={styles.header}>
+          <span className={styles.headerTitle}>[ SIGNAL TRANSMISSION ]</span>
+          <span className={styles.headerSub}>ESTABLISH DIRECT COMMS CHANNEL</span>
+        </header>
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const validateErrors = validateForm();
-        if(Object.keys(validateErrors).length > 0) {
-            setErrors(validateErrors);
-            return;
-        }
+        {isSent ? (
+          <div className={styles.success}>
+            <div className={styles.successIcon}>✓</div>
+            <span className={styles.successTitle}>TRANSMISSION COMPLETE</span>
+            <p className={styles.successMsg}>
+              Signal received.<br />
+              I'll get back to you shortly.
+            </p>
+          </div>
+        ) : (
+          <form className={styles.form} onSubmit={handleSubmit} noValidate>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="ct-name">OPERATOR ID</label>
+              <input
+                className={`${styles.input}${errors.name ? ` ${styles.hasError}` : ''}`}
+                id="ct-name"
+                name="name"
+                type="text"
+                placeholder="Your name"
+                value={formData.name}
+                onChange={handleChange}
+                disabled={isLoading}
+                autoComplete="name"
+              />
+              {errors.name && <span className={styles.errorMsg}>{errors.name}</span>}
+            </div>
 
-        setIsLoading(true);
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="ct-email">COMM FREQUENCY</label>
+              <input
+                className={`${styles.input}${errors.email ? ` ${styles.hasError}` : ''}`}
+                id="ct-email"
+                name="email"
+                type="email"
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={isLoading}
+                autoComplete="email"
+              />
+              {errors.email && <span className={styles.errorMsg}>{errors.email}</span>}
+            </div>
 
-        const { name, email, message } = formData;
-        const sanitizedData = {
-            name: "Name: " + DOMPurify.sanitize(name), 
-            email: "Email: " + DOMPurify.sanitize(email), 
-            message: "Message: " + DOMPurify.sanitize(message), 
-        };
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="ct-message">TRANSMISSION</label>
+              <textarea
+                className={`${styles.textarea}${errors.message ? ` ${styles.hasError}` : ''}`}
+                id="ct-message"
+                name="message"
+                placeholder="Your message..."
+                value={formData.message}
+                onChange={handleChange}
+                disabled={isLoading}
+                autoComplete="off"
+              />
+              {errors.message && <span className={styles.errorMsg}>{errors.message}</span>}
+            </div>
 
-
-        const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
-        const templateID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
-        const userID = process.env.REACT_APP_EMAILJS_USER_ID;
-
-        emailjs
-        .send(serviceID, templateID, sanitizedData, userID)
-        .then((response) => {
-            console.log("Email is sent successfully!", response.text);
-            setFormData(initialState);
-            setErrors({});
-            setIsSent(false);
-        })
-        .catch((error) => {
-            console.log("Email sending failed", error);
-            console.log(serviceID, templateID, userID);
-        })
-        .finally(() => {
-            setIsLoading(false);
-        });
-    };
-
-    const validateForm = () => {
-        const { name, email, message } = formData;
-        const errors= {};
-
-        if (!name.trim()) {
-            errors.name = "Name is required";
-        }
-
-        if (!email.trim()) {
-            errors.email = "Email is required";
-        } else if (!isValidEmail(email)) {
-            errors.email = "Invalid email format";
-        }
-
-        if (!message.trim()) {
-            errors.message = "Message is required";
-        }
-        return errors;
-    };
-
-    const isValidEmail = (value) =>{
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(value);
-    };
-
-    return (
-        <div className="contact-menu">
-            {!isSent && (<form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="name">Name: </label>
-                    <input type="text"
-                     id="name" 
-                     name="name" 
-                     placeholder="Name" 
-                     value={formData.name} 
-                     onChange={handleChange}
-                     className={errors.name?"error":""}
-                     disabled={isLoading}
-                     autoComplete="name"
-                    />
-                        {errors.name && (
-                            <span className="error-message">{errors.name}</span>
-                        )}
-                </div>
-                <div className="form-group">
-                    <label htmlFor="email">Email: </label>
-                    <input type="email"
-                     id="email" 
-                     name="email" 
-                     placeholder="Email" 
-                     value={formData.email} 
-                     onChange={handleChange}
-                     className={errors.email?"error":""}
-                     disabled={isLoading}
-                     autoComplete="email" />
-                        {errors.email && (
-                            <span className="error-message">{errors.email}</span>
-                        )}
-                </div>
-                <div className="form-group">
-                    <label htmlFor="message">Message: </label>
-                    <textarea
-                     id="message" 
-                     name="message" 
-                     placeholder="Message" 
-                     value={formData.message} 
-                     onChange={handleChange}
-                     className={errors.message?"error":""}
-                     disabled={isLoading}
-                     autoComplete="off">
-                         </textarea>
-                        {errors.message && (
-                            <span className="error-message">{errors.message}</span>
-                        ) }
-                </div>
-                <button type="submit" disabled={isLoading}>{isLoading? "SENDING...": "SUBMIT"}</button>
-            </form>)}
-            {isSent && (
-                <div className="success-message">
-                    <p>SUCCESS!</p>
-                    <p>Your message has been successfully sent!</p>
-                    <p>You can safely leave this page.</p>
-                </div>
-            )}
-        </div>
-        );
+            <button
+              className={styles.submit}
+              type="submit"
+              disabled={isLoading}
+              data-loading={isLoading ? 'true' : undefined}
+            >
+              {isLoading ? 'TRANSMITTING' : '[ SEND TRANSMISSION ]'}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
 }

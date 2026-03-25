@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
-import CyberUniPage from "./cyber-uni/CyberUniPage";
+import CyberUniHorizontalPage from "./cyber-uni/CyberUniHorizontalPage";
 import NoirUniPage from "./noir-uni/NoirUniPage";
 import PixelUniPage from "./pixel-uni/PixelUniPage";
 import MiamiViceUniPage from "./miami-vice-uni/MiamiViceUniPage";
@@ -10,7 +10,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/cyber-uni/*" element={<CyberUniPage />} />
+      <Route path="/cyber-uni" element={<CyberUniHorizontalPage />} />
       <Route path="/noir-uni" element={<NoirUniPage />} />
       <Route
         path="/theme-2"
@@ -25,18 +25,6 @@ const App = () => {
       <Route
         path="/theme-4"
         element={<Navigate to="/miami-vice" replace />}
-      />
-      <Route
-        path="/skills"
-        element={<Navigate to="/cyber-uni/skills" replace />}
-      />
-      <Route
-        path="/projects"
-        element={<Navigate to="/cyber-uni/projects" replace />}
-      />
-      <Route
-        path="/contact"
-        element={<Navigate to="/cyber-uni/contact" replace />}
       />
     </Routes>
   );

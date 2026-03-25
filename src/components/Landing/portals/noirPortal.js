@@ -3,6 +3,7 @@
  * 结构与 cyberPortal.js 一致；文案字段从 BACKLOT_ALPHA 引用，站内页仍共用同一份数据。
  */
 import noirPortalPoster from "../../../assets/noir/portal.png";
+import noirPortalVideo from "../../../assets/noir/portal.mp4";
 import { BACKLOT_ALPHA } from "../../../noir-uni/content/backlotAlpha";
 import { mergePortal } from "./portalSliceDefaults";
 
@@ -27,8 +28,8 @@ export const noirPortal = mergePortal({
   posterAlignX: BACKLOT_ALPHA.posterAlignX,
   posterAlignY: 100,
   posterBleedScale: 1,
-  videoSrc: undefined,
-  videoObjectPosition: undefined,
+  videoSrc: noirPortalVideo,
+  videoObjectPosition: "50% 100%",
 
   // —— 叠在底图上的渐变遮罩 ——
   accent:

@@ -70,7 +70,7 @@
 
 .skill-menu {
     width: 31.2rem;
-    position: fixed;
+    position: absolute;
     display: flex;
     flex-direction: column;
     top: 30%;

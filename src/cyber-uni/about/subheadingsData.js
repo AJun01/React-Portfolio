@@ -5,8 +5,10 @@ const subheadingsData = {
             content: (
                 <>
                     <p>
-                    I am a full-stack developer pursuing an M.S. in Computer Science at Boston University, with experience in web and mobile development. 
-                     <br></br>Recently, I contributed to the Flexbench app during Google Summer of Code 2024, focusing on HTTP traffic simulation and data anonymization. <br></br>I’m now seeking opportunities of Interns or Full Time Entry jobs.</p>
+                        I am a full-stack developer pursuing an M.S. in Computer Science at Boston University, with experience in web and mobile development.{" "}
+                        Recently, I contributed to the Flexbench app during Google Summer of Code 2024, focusing on HTTP traffic simulation and data anonymization.{" "}
+                        I'm now seeking opportunities as an intern or full-time entry-level engineer.
+                    </p>
                 </>
             )
         }
@@ -17,7 +19,7 @@ const subheadingsData = {
             content: (
                 <>
                     <p>
-                        Boston University: Computer Science - Consentrated on Software Engineering
+                        Boston University: Computer Science — Concentrated on Software Engineering
                     </p>
                 </>
             )
@@ -27,7 +29,7 @@ const subheadingsData = {
             content: (
                 <>
                     <p>
-                        Pennsylvania State University: Information Sciences & Technology 
+                        Pennsylvania State University: Information Sciences &amp; Technology
                     </p>
                 </>
             )
@@ -65,11 +67,11 @@ const subheadingsData = {
             ),
         },
         {
-            title: "2022 Teach Assistance",
+            title: "2022 Teaching Assistant",
             content: (
                 <>
                     <p>
-                    Optimized Linux environments for robotics projects and provided bilingual teaching support to a diverse student body.
+                        Optimized Linux environments for robotics projects and provided bilingual teaching support to a diverse student body.
                     </p>
                 </>
             ),

@@ -3,6 +3,7 @@
  * 文案与渐变与 pixel-uni 共用 PIXEL_REALM。
  */
 import pixelPortalPoster from "../../../assets/pixel/portal.png";
+import pixelPortalVideo from "../../../assets/pixel/portal.mp4";
 import { PIXEL_REALM } from "../../../pixel-uni/content/pixelRealm";
 import { mergePortal } from "./portalSliceDefaults";
 
@@ -26,8 +27,8 @@ export const pixelPortal = mergePortal({
   posterAlignX: PIXEL_REALM.posterAlignX,
   posterAlignY: -20,
   posterBleedScale: 1.1,
-  videoSrc: undefined,
-  videoObjectPosition: undefined,
+  videoSrc: pixelPortalVideo,
+  videoObjectPosition: "50% -20%",
 
   accent: undefined,
 });

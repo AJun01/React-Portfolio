@@ -1,0 +1,303 @@
+/* ══════════════════════════════════════════════════════════════
+   GSOC PANEL — Left info + Right PDF viewer
+   ══════════════════════════════════════════════════════════════ */
+
+.panel {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+}
+
+/* ── Columns ─────────────────────────────────────────────────── */
+.leftCol {
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 11rem 2vw 3rem 3vw;   /* ← TUNE: top pushes content down */
+  gap: 1.4rem;
+  border-right: 1px solid rgba(0, 220, 255, 0.12);
+  overflow-y: auto;
+}
+
+.rightCol {
+  width: 60%;
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Screenshot image frame ──────────────────────────────────── */
+.imgFrame {
+  position: relative;
+  width: 100%;
+  max-height: 38vh;
+  border: 1px solid rgba(0, 220, 255, 0.2);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: top;
+  filter: saturate(0.8) contrast(1.05);
+}
+
+/* Scanline overlay */
+.imgScanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.08) 3px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Corner brackets */
+.imgCornerTL,
+.imgCornerBR {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  z-index: 2;
+}
+
+.imgCornerTL {
+  top: 6px; left: 6px;
+  border-top: 2px solid rgba(0, 220, 255, 0.7);
+  border-left: 2px solid rgba(0, 220, 255, 0.7);
+}
+
+.imgCornerBR {
+  bottom: 6px; right: 6px;
+  border-bottom: 2px solid rgba(0, 220, 255, 0.7);
+  border-right: 2px solid rgba(0, 220, 255, 0.7);
+}
+
+/* ── Info block ──────────────────────────────────────────────── */
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;                   /* ← TUNE: gap between info items */
+}
+
+.badge {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  color: rgba(0, 220, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.org {
+  font-size: clamp(1.1rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.project {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.65rem, 1vw, 0.85rem);
+  letter-spacing: 0.15em;
+  color: rgba(255, 80, 200, 0.85);
+  margin: 0;
+  text-transform: lowercase;
+}
+
+.highlights {
+  list-style: none;
+  padding: 0;
+  margin: 0.2rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;                  /* ← TUNE: space between bullets */
+}
+
+.highlight {
+  font-size: clamp(0.5rem, 0.72vw, 0.6rem);  /* ← TUNE: bullet font size */
+  color: rgba(190, 225, 255, 0.65);
+  line-height: 1.45;
+  padding-left: 0.85rem;
+  position: relative;
+}
+
+.arrow {
+  position: absolute;
+  left: 0;
+  color: rgba(0, 220, 255, 0.5);
+  font-size: 0.5rem;
+  top: 0.1em;
+}
+
+/* ── GitHub link button ──────────────────────────────────────── */
+.ghLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(255, 80, 200, 0.35);
+  background: rgba(255, 80, 200, 0.06);
+  color: rgba(255, 80, 200, 0.9);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.ghLink:hover {
+  background: rgba(255, 80, 200, 0.14);
+  border-color: rgba(255, 80, 200, 0.7);
+  color: #fff;
+}
+
+.ghIcon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* ── PDF header bar ──────────────────────────────────────────── */
+.pdfHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1.2rem;
+  border-bottom: 1px solid rgba(0, 220, 255, 0.12);
+  background: rgba(0, 8, 22, 0.7);
+  flex-shrink: 0;
+}
+
+.pdfLabel {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  color: rgba(0, 220, 255, 0.55);
+  text-transform: uppercase;
+}
+
+.pdfPages {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.15em;
+  color: rgba(0, 220, 255, 0.35);
+}
+
+/* ── PDF scroll area ─────────────────────────────────────────── */
+.pdfScroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.2rem 1rem;
+  background: rgba(0, 4, 14, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 220, 255, 0.3) transparent;
+}
+
+.pdfScroll::-webkit-scrollbar        { width: 4px; }
+.pdfScroll::-webkit-scrollbar-track  { background: transparent; }
+.pdfScroll::-webkit-scrollbar-thumb  { background: rgba(0, 220, 255, 0.25); border-radius: 2px; }
+
+/* Each page wrapper */
+.pdfPageWrap {
+  position: relative;
+  border: 1px solid rgba(0, 220, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Page number badge */
+.pdfPageNo {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.4rem;
+  letter-spacing: 0.1em;
+  color: rgba(0, 220, 255, 0.4);
+  background: rgba(0, 4, 14, 0.7);
+  padding: 2px 5px;
+  pointer-events: none;
+}
+
+.pdfLoading {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: rgba(0, 220, 255, 0.4);
+  margin: 3rem auto;
+  text-transform: uppercase;
+}
+
+/* ── Entrance / exit animations ─────────────────────────────────
+   Default: both columns hidden off their respective sides.
+   Active class slides them in.                                  */
+
+.leftCol {
+  opacity: 0;
+  transform: translateX(-3.5rem);
+  transition:
+    opacity   0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.leftColActive {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.rightCol {
+  opacity: 0;
+  transform: translateX(3.5rem);
+  transition:
+    opacity   0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s,
+    transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s;
+}
+
+.rightColActive {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Bottom label strip ──────────────────────────────────────── */
+.labelStrip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.4rem 2.5vw;
+  border-top: 1px solid rgba(0, 220, 255, 0.08);
+  background: rgba(0, 4, 14, 0.6);
+  pointer-events: none;
+}
+
+.labelText {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.25em;
+  color: rgba(0, 220, 255, 0.3);
+  text-transform: uppercase;
+}

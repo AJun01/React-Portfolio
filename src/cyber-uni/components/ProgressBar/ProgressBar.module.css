@@ -1,0 +1,199 @@
+/* ── Wrapper: fixed bottom bar ────────────────────────────────── */
+.wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  /* Top padding must accommodate the thumb floating above the track */
+  padding: 4rem 2.5rem 1.6rem;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 5, 18, 0.92) 0%,
+    rgba(0, 5, 18, 0.5) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Track ────────────────────────────────────────────────────── */
+.track {
+  position: relative;
+  height: 2px;
+  background: rgba(0, 220, 255, 0.12);
+  border-radius: 1px;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+/* ── Fill ─────────────────────────────────────────────────────── */
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 220, 255, 0.3),
+    rgba(0, 220, 255, 0.8)
+  );
+  border-radius: 1px;
+  pointer-events: none;
+  will-change: width;
+}
+
+/* ── Milestone buttons — sit ON the track (centered on the line) */
+.milestone {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+/* ── Milestone: icon image ────────────────────────────────────── */
+.milestoneIcon {
+  width: 22px;
+  height: 22px;
+  opacity: 0.4;
+  filter: drop-shadow(0 0 3px rgba(0, 220, 255, 0.2));
+  transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.milestone:hover .milestoneIcon {
+  opacity: 0.85;
+  filter:
+    drop-shadow(0 0 5px rgba(0, 220, 255, 0.7))
+    drop-shadow(0 0 5px rgba(0, 220, 255, 0.35));
+  transform: scale(1.8);
+}
+
+.milestoneActive .milestoneIcon {
+  opacity: 1;
+  filter:
+    drop-shadow(0 0 6px rgba(0, 220, 255, 0.9))
+    drop-shadow(0 0 14px rgba(0, 220, 255, 0.5))
+    drop-shadow(0 0 22px rgba(0, 220, 255, 0.2));
+  transform: scale(1.25);
+}
+
+/* ── Milestone: dot for OPENING (no icon) ────────────────────── */
+.milestoneDot {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(0, 220, 255, 0.3);
+  border: 1px solid rgba(0, 220, 255, 0.5);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.milestone:hover .milestoneDot,
+.milestoneActive .milestoneDot {
+  background: rgba(0, 220, 255, 0.7);
+  box-shadow: 0 0 8px rgba(0, 220, 255, 0.6), 0 0 16px rgba(0, 220, 255, 0.3);
+}
+
+/* ── Milestone: label — floats above the icon on hover / active  */
+.milestoneLabel {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 220, 255, 0.85);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.milestone:hover .milestoneLabel,
+.milestoneActive .milestoneLabel {
+  opacity: 1;
+}
+
+/* ── Draggable thumb — floats ABOVE the track ─────────────────── */
+.thumb {
+  position: absolute;
+  top: 50%;
+  /* lift thumb above the track; gap matches the stem height */
+  transform: translate(-50%, calc(-100% - -8px));
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+  pointer-events: all;
+  will-change: left;
+  z-index: 10;
+}
+
+/* Thin stem connecting thumb to the track line */
+.thumb::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0px;
+  height: 0px;
+  background: linear-gradient(
+    to bottom,
+    rgb(104, 77, 94),
+    rgba(255, 100, 200, 0.1)
+  );
+  pointer-events: none;
+}
+
+.thumb:active {
+  cursor: grabbing;
+}
+
+/* ── Thumb icon: progressLogo.svg — pink pulsing glow ─────────── */
+.thumbIcon {
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+  animation: thumbGlow 2.4s ease-in-out infinite;
+  will-change: filter;
+}
+
+@keyframes thumbGlow {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 5px rgba(255, 80, 200, 0.85))
+      drop-shadow(0 0 14px rgba(255, 80, 200, 0.45))
+      drop-shadow(0 0 24px rgba(255, 80, 200, 0.2));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 10px rgba(255, 80, 200, 1))
+      drop-shadow(0 0 22px rgba(255, 80, 200, 0.7))
+      drop-shadow(0 0 40px rgba(255, 80, 200, 0.35))
+      drop-shadow(0 0 60px rgba(255, 80, 200, 0.12));
+  }
+}
+
+.thumb:hover .thumbIcon,
+.thumb:active .thumbIcon {
+  animation: none;
+  filter:
+    drop-shadow(0 0 12px rgba(255, 80, 200, 1))
+    drop-shadow(0 0 26px rgba(255, 80, 200, 0.75))
+    drop-shadow(0 0 46px rgba(255, 80, 200, 0.4));
+}

@@ -1,0 +1,954 @@
+/* ════════════════════════════════════════════════════════════════
+   PAGE ROOT & BACKGROUND LAYERS
+   ════════════════════════════════════════════════════════════════ */
+
+.pageRoot {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Fixed background video: opening.mp4, always covers the viewport.
+   Phase 1: scrubbed frame-by-frame.
+   Phase 2+: frozen at last frame; CSS filter (grey/blur) applied via JS. */
+.bgVideo {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: -5;
+  pointer-events: none;
+  /* No CSS transition — filter is driven smoothly by JS scroll events */
+}
+
+/* Dark semi-transparent overlay — always present */
+.videoOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: -4;
+  background: rgba(0, 0, 0, 0.38);
+  pointer-events: none;
+}
+
+/* ── UI chrome wrapper ──────────────────────────────────────────── */
+/* Contains Nav, PlayerStats, BackToUniverses, ProgressBar.
+   opacity and pointer-events are driven by JS (uiOpacity). */
+.uiLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none; /* never intercepts events — children override individually */
+}
+
+/* CRT scanline texture */
+.scanline {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.07) 2px,
+    rgba(0, 0, 0, 0.07) 4px
+  );
+  pointer-events: none;
+}
+
+/* Radial darkness toward edges */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 38%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── "Scroll to play" hint — visible only before first scroll ── */
+.scrollHint {
+  position: fixed;
+  bottom: 5.5rem;  /* sits above the progress bar */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 250;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  /* opacity is driven by inline style (fraction) */
+  transition: opacity 0.5s ease;
+}
+
+.scrollHintText {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(0, 220, 255, 0.7);
+  animation: hintBlink 1.8s ease-in-out infinite;
+}
+
+.scrollHintArrow {
+  display: flex;
+  gap: 0.15rem;
+  color: rgba(0, 220, 255, 0.7);
+  font-size: 0.9rem;
+  animation: hintArrowSlide 1.8s ease-in-out infinite;
+}
+
+@keyframes hintBlink {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 1;    }
+}
+
+@keyframes hintArrowSlide {
+  0%, 100% { transform: translateX(0);   opacity: 0.25; }
+  50%       { transform: translateX(5px); opacity: 1;    }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HORIZONTAL SCROLL CONTAINER
+   ════════════════════════════════════════════════════════════════ */
+
+.scrollContainer {
+  position: absolute;
+  inset: 0;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  /* Prevent macOS/Chrome "swipe to go back" when at left edge */
+  overscroll-behavior: none;
+  /* JS handles panel snapping — no CSS scroll-snap */
+  z-index: 2;
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  display: flex;
+  height: 100%;
+  /* opening (400vw) + 8 panels × 100vw = 12 × 100vw; maxScroll = 11 × vw */
+  width: calc(12 * 100vw);
+}
+
+/* ── Individual panel ─────────────────────────────────────────── */
+.panel {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative; /* required for absolute-positioned children */
+  overflow: hidden;
+  /* scroll-snap-align removed — JS handles snapping */
+}
+
+/* ════════════════════════════════════════════════════════════════
+   OPENING SPACER
+   ════════════════════════════════════════════════════════════════ */
+
+/* 400vw of transparent scroll space (= 4 panel widths = SPACER_VW).
+   Scrolling 0→340% (0→3.4vw) drives video scrub;
+   340→400% (3.4→4.0vw) drives fade-to-black.
+   No snap here — JS only snaps content panels.                    */
+.openingSpacer {
+  width: 400vw;
+  height: 100vh;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Centered content helper used by About panels */
+.contentCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ABOUT PANEL CONTENT STYLES
+   (migrated from AboutScrollPage.module.css)
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Shared section label ──────────────────────────────────────── */
+.sectionLabel {
+  font-size: clamp(0.58rem, 0.9vw, 0.72rem);
+  letter-spacing: 0.42em;
+  color: rgba(0, 220, 255, 0.7);
+  text-shadow: 0 0 6px rgba(0, 220, 255, 0.4);
+  margin: 0 0 1.4rem;
+  text-align: center;
+}
+
+/* ── Shared card ───────────────────────────────────────────────── */
+.card {
+  background: rgba(4, 7, 18, 0.72);
+  border: 1px solid rgba(0, 220, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 2px;
+  padding: 1.4rem 1.8rem;
+}
+
+/* ── HERO ─────────────────────────────────────────────────────── */
+.heroContent {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.heroLevel {
+  font-size: clamp(0.6rem, 1.1vw, 0.78rem);
+  letter-spacing: 0.38em;
+  color: rgba(0, 220, 255, 0.85);
+  text-shadow: 0 0 8px rgba(0, 220, 255, 0.55);
+  margin: 0;
+}
+
+.heroName {
+  font-family: 'Russo One', system-ui, sans-serif;
+  font-size: clamp(2.6rem, 8vw, 6rem);
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow:
+    0 0 8px  #f00,
+    0 0 18px #f00,
+    0 0 35px #00f,
+    0 0 65px #00f;
+  margin: 0;
+  animation: neonHeroBlink 6s infinite 1.5s;
+}
+
+/* Scramble span wrapper — inherits heroName size/font */
+.heroNameScramble {
+  display: inline-block;
+}
+/* Unlocked (still scrambling) characters: pink flicker */
+.heroNameScramble span:not([data-locked]) {
+  color: #ff4fba;
+  text-shadow:
+    0 0 4px  rgba(255, 79, 186, 0.9),
+    0 0 10px rgba(255, 79, 186, 0.6);
+  animation: scrambleFlicker 0.07s steps(1) infinite;
+}
+/* Locked (resolved) characters: white neon */
+.heroNameScramble span[data-locked] {
+  color: #fff;
+}
+@keyframes scrambleFlicker {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@keyframes neonHeroBlink {
+  0%, 78%, 82%, 86%, 100% { opacity: 1; }
+  79%  { opacity: 0.85; }
+  81%  { opacity: 1;    }
+  84%  { opacity: 0.85; }
+}
+
+.heroDivider {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 220, 255, 0.75),
+    transparent
+  );
+}
+
+.heroRole {
+  font-size: clamp(0.72rem, 1.5vw, 1.05rem);
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+.heroTagline {
+  font-size: clamp(0.62rem, 1.1vw, 0.82rem);
+  letter-spacing: 0.08em;
+  color: rgba(190, 225, 255, 0.55);
+  max-width: 34ch;
+  line-height: 1.7;
+  font-family: 'Fast-Font', sans-serif;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── BIO ──────────────────────────────────────────────────────── */
+.bioContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: min(520px, 82vw);
+}
+
+.bioText {
+  font-size: clamp(0.78rem, 1.35vw, 0.92rem);
+  line-height: 1.85;
+  color: rgba(200, 235, 255, 0.82);
+  font-family: 'Fast-Font', sans-serif;
+  margin: 0;
+}
+
+/* ── EDUCATION ────────────────────────────────────────────────── */
+.educationContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(680px, 88vw);
+}
+
+.eduCards {
+  display: flex;
+  gap: 1.4rem;
+  width: 100%;
+}
+
+.eduCard {
+  flex: 1;
+}
+
+.eduYear {
+  font-size: 0.63rem;
+  letter-spacing: 0.28em;
+  color: rgba(0, 220, 255, 0.62);
+  margin: 0 0 0.45rem;
+}
+
+.eduDegree {
+  font-size: clamp(0.78rem, 1.4vw, 0.98rem);
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 0.4rem;
+  font-weight: normal;
+  letter-spacing: 0.04em;
+}
+
+.eduSchool {
+  font-size: 0.73rem;
+  color: rgba(190, 225, 255, 0.55);
+  font-family: 'Fast-Font', sans-serif;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.eduDept {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: rgba(0, 220, 255, 0.4);
+  margin: 0.3rem 0 0.9rem;
+  text-transform: uppercase;
+}
+
+.detailList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.detailItem {
+  font-size: 0.68rem;
+  color: rgba(200, 230, 255, 0.65);
+  line-height: 1.55;
+  padding-left: 1.1em;
+  position: relative;
+}
+
+.detailItem::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: rgba(0, 220, 255, 0.5);
+}
+
+/* ── GSOC ─────────────────────────────────────────────────────── */
+.gsocContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(520px, 82vw);
+}
+
+.gsocMeta {
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  color: rgba(0, 220, 255, 0.55);
+  text-transform: uppercase;
+  margin: 0 0 0.3rem;
+}
+
+.gsocYear {
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  color: rgba(0, 220, 255, 0.35);
+  margin: 0 0 0.9rem;
+}
+
+.gsocSummary {
+  font-size: 0.75rem;
+  color: rgba(200, 230, 255, 0.75);
+  line-height: 1.65;
+  margin: 0 0 1.1rem;
+}
+
+.gsocHighlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gsocItem {
+  font-size: 0.68rem;
+  color: rgba(200, 230, 255, 0.6);
+  display: flex;
+  gap: 0.5em;
+  align-items: baseline;
+}
+
+.gsocBullet {
+  color: rgba(0, 220, 255, 0.6);
+  font-size: 0.55rem;
+  flex-shrink: 0;
+}
+
+/* ── CAREER ───────────────────────────────────────────────────── */
+.careerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: min(600px, 86vw);
+  max-height: 78vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0 0.25rem;
+}
+
+.careerContent::-webkit-scrollbar {
+  display: none;
+}
+
+.careerEntry {
+  display: flex;
+  gap: 1.1rem;
+  align-items: flex-start;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.careerEntry.entryVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.entryYear {
+  min-width: 2.8rem;
+  text-align: right;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: rgba(0, 220, 255, 0.6);
+  padding-top: 0.28rem;
+  flex-shrink: 0;
+}
+
+.entryLine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 0.28rem;
+}
+
+.entryDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 220, 255, 0.7);
+  background: rgba(0, 220, 255, 0.28);
+  flex-shrink: 0;
+}
+
+.entryConnector {
+  width: 1px;
+  height: 2.8rem;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 220, 255, 0.25),
+    rgba(0, 220, 255, 0.06)
+  );
+}
+
+.careerEntry:last-child .entryConnector {
+  display: none;
+}
+
+.entryBody {
+  flex: 1;
+  padding-bottom: 1.1rem;
+}
+
+.entryRole {
+  font-size: clamp(0.78rem, 1.35vw, 0.92rem);
+  color: rgba(255, 255, 255, 0.88);
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.04em;
+}
+
+.entryDesc {
+  font-size: 0.72rem;
+  color: rgba(190, 225, 255, 0.52);
+  font-family: 'Fast-Font', sans-serif;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   EXPERIENCE EDITORIAL PANELS
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Shared typography ─────────────────────────────────────────── */
+.expEra {
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.55rem, 0.9vw, 0.72rem);
+  letter-spacing: 0.32em;
+  color: rgba(0, 220, 255, 0.55);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.expTitle {
+  font-size: clamp(1.8rem, 4.5vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.08;
+  color: rgba(255, 255, 255, 0.95);
+  text-transform: uppercase;
+  margin: 0 0 1.2rem;
+}
+
+.expSubtitle {
+  font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+  color: rgba(190, 230, 255, 0.75);
+  letter-spacing: 0.06em;
+  margin: 0 0 0.3rem;
+}
+
+.expDept {
+  font-size: clamp(0.55rem, 0.85vw, 0.68rem);
+  letter-spacing: 0.2em;
+  color: rgba(0, 220, 255, 0.4);
+  text-transform: uppercase;
+  margin: 0 0 1.6rem;
+}
+
+.expList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.expListItem {
+  display: flex;
+  gap: 0.6em;
+  font-size: clamp(0.65rem, 1vw, 0.78rem);
+  color: rgba(200, 230, 255, 0.65);
+  line-height: 1.55;
+}
+
+.expArrow {
+  color: rgba(0, 220, 255, 0.55);
+  font-size: 0.55rem;
+  flex-shrink: 0;
+  margin-top: 0.15em;
+}
+
+/* ── Bottom label strip (all exp panels) ──────────────────────── */
+.expLabelStrip {
+  position: absolute;
+  bottom: 5rem;   /* above progress bar */
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.expLabelText {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.28em;
+  color: rgba(0, 220, 255, 0.3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PANEL 2 & 4 — FEATURE (editorial, image bleeding to edge)
+   Panel 2: image right, text left
+   Panel 4: image left,  text right (mirrored)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Right-side bleed image */
+.expImgRight {
+  position: absolute;
+  top: 0; right: 0;
+  width: 52%;
+  height: 100%;
+  /* diagonal clip — left edge of the image block is angled */
+  clip-path: polygon(7% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+/* Left-side bleed image */
+.expImgLeft {
+  position: absolute;
+  top: 0; left: 0;
+  width: 52%;
+  height: 100%;
+  clip-path: polygon(0% 0%, 100% 0%, 93% 100%, 0% 100%);
+}
+
+/* Text block — left of right-bleed image */
+.expTextLeft {
+  position: absolute;
+  top: 22%;
+  left: 6vw;
+  max-width: 42vw;
+  z-index: 2;
+}
+
+/* Text block — right of left-bleed image */
+.expTextRight {
+  position: absolute;
+  top: 22%;
+  right: 6vw;
+  max-width: 42vw;
+  z-index: 2;
+  text-align: left;
+}
+
+/* Two small thumbnails row below text */
+.expThumbs {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.8rem;
+}
+
+/* ── School panel entrance / exit animations ───────────────────────
+   Default state = hidden (off to their natural side).
+   .panelSchoolActive triggers the reveal.                          */
+
+/* Text blocks: slide from their respective sides */
+.expTextLeft,
+.expTextRight {
+  opacity: 0;
+  transition:
+    opacity  0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.expTextLeft  { transform: translateX(-3.5rem); }
+.expTextRight { transform: translateX( 3.5rem); }
+
+/* Image blocks: slide from their respective sides, slight delay */
+.expImgRight,
+.expImgLeft {
+  opacity: 0;
+  transition:
+    opacity  0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s,
+    transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s;
+}
+.expImgRight { transform: translateX( 4rem); }
+.expImgLeft  { transform: translateX(-4rem); }
+
+/* Label strip: fade up, slightly later */
+.panel .expLabelStrip {
+  opacity: 0;
+  transform: translateY(1rem);
+  transition:
+    opacity  0.5s ease 0.3s,
+    transform 0.5s ease 0.3s;
+}
+
+/* ── Active: everything slides in ─────────────────────────────── */
+.panelSchoolActive .expTextLeft,
+.panelSchoolActive .expTextRight,
+.panelSchoolActive .expImgRight,
+.panelSchoolActive .expImgLeft {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.panelSchoolActive .expLabelStrip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PANEL 3 — DOSSIER FILES (two case-files side by side)
+   ══════════════════════════════════════════════════════════════════ */
+.dossierLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 100%;
+  padding: 2rem 10vw 0rem;   /* ← TUNE: reduce if still overflowing */
+  gap: 0rem;
+}
+
+.dossierHeader {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  color: rgba(0, 220, 255, 0.55);
+  text-transform: uppercase;
+  margin: 0;
+  align-self: flex-start;
+}
+
+.dossierFiles {
+  display: flex;
+  gap: clamp(1.2rem, 3vw, 3rem);
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* Individual case-file card */
+.dossierFile {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(0, 220, 255, 0.15);
+  background: rgba(0, 8, 22, 0.65);
+  padding: 0 0 1rem 0;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  overflow: hidden;
+}
+
+.dossierFile.dossierFileVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dossierFile:nth-child(2) {
+  transition-delay: 0.18s;
+}
+
+.dossierBody {
+  padding: 1rem 1rem 0;  /* ← TUNE: inner card padding */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dossierFileNo {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.25em;
+  color: rgba(0, 220, 255, 0.35);
+  text-transform: uppercase;
+}
+
+.dossierYear {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: rgba(0, 220, 255, 0.5);
+  margin: 0;
+}
+
+.dossierRole {
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.03em;
+  margin: 0.1rem 0 0;
+  line-height: 1.3;
+}
+
+.dossierDesc {
+  font-size: clamp(0.6rem, 0.9vw, 0.72rem);
+  color: rgba(190, 225, 255, 0.55);
+  line-height: 1.6;
+  margin: 0.3rem 0 0;
+}
+
+.dossierCompany {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.65rem, 1vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(0, 220, 255, 0.9);
+  text-transform: uppercase;
+  margin: 0.1rem 0 0;
+}
+
+.dossierTech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.4rem 0 0.2rem;
+}
+
+.dossierTag {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.15em;
+  color: rgba(255, 80, 200, 0.85);
+  border: 1px solid rgba(255, 80, 200, 0.3);
+  padding: 0.1rem 0.4rem;
+  text-transform: uppercase;
+  background: rgba(255, 80, 200, 0.06);
+}
+
+.dossierBullets {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dossierBullet {
+  font-size: clamp(0.55rem, 0.85vw, 0.68rem);
+  color: rgba(190, 225, 255, 0.6);
+  line-height: 1.5;
+  padding-left: 0.9rem;
+  position: relative;
+}
+
+.dossierBullet::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: rgba(0, 220, 255, 0.5);
+  font-size: 0.55rem;
+  top: 0.05em;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PANEL 5 — MISSION REPORT (centred, GSOC)
+   ══════════════════════════════════════════════════════════════════ */
+.missionLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 5rem 6vw 7rem;
+  gap: 1.1rem;
+  text-align: center;
+}
+
+.missionBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid rgba(0, 220, 255, 0.22);
+  padding: 0.4rem 1.2rem;
+  background: rgba(0, 220, 255, 0.04);
+}
+
+.missionYear {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  color: rgba(0, 220, 255, 0.7);
+  text-transform: uppercase;
+}
+
+.missionDivider {
+  display: block;
+  width: 1px;
+  height: 14px;
+  background: rgba(0, 220, 255, 0.3);
+}
+
+.missionProgram {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  color: rgba(0, 220, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.missionTitle {
+  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+}
+
+.missionSummary {
+  max-width: min(540px, 78vw);
+  font-size: clamp(0.68rem, 1.1vw, 0.82rem);
+  color: rgba(190, 225, 255, 0.65);
+  line-height: 1.7;
+  margin: 0 0 0.4rem;
+}
+
+.missionTags {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 1.4rem;
+}
+
+.missionTag {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45em;
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.58rem, 0.88vw, 0.68rem);
+  letter-spacing: 0.1em;
+  color: rgba(0, 220, 255, 0.65);
+  text-transform: uppercase;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .eduCards {
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .heroName {
+    letter-spacing: 0.06em;
+  }
+}
