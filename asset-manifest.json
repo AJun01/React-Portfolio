@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.css": "/React-Portfolio/static/css/main.23460cf9.css",
-    "main.js": "/React-Portfolio/static/js/main.d52a5562.js",
+    "main.css": "/React-Portfolio/static/css/main.8a72ce59.css",
+    "main.js": "/React-Portfolio/static/js/main.5273f542.js",
     "static/media/opening_scrub.mp4": "/React-Portfolio/static/media/opening_scrub.7179ac77382c938449bc.mp4",
     "static/media/hero.png": "/React-Portfolio/static/media/hero.e50bbf31e136b8df5f5b.png",
     "static/media/portal.png": "/React-Portfolio/static/media/portal.2efce51051f26a02cba6.png",
-    "static/media/portal.mp4": "/React-Portfolio/static/media/portal.2b44bf66251d02b4fca0.mp4",
+    "static/media/portal.mp4": "/React-Portfolio/static/media/portal.72b91c9576d08ee0726c.mp4",
     "static/media/progressLogo.svg": "/React-Portfolio/static/media/progressLogo.102d895c33bb3b735fa4e95144b72575.svg",
     "static/media/Fast_Serif.ttf": "/React-Portfolio/static/media/Fast_Serif.a6f6111ed6066953463c.ttf",
     "static/media/1.jpg": "/React-Portfolio/static/media/1.bf4eb801314aa9900729.jpg",
@@ -20,11 +20,11 @@
     "static/media/front.png": "/React-Portfolio/static/media/front.5f800348c17f3fb137ed.png",
     "static/media/back.png": "/React-Portfolio/static/media/back.8a7b1ae768beb2ae57c4.png",
     "index.html": "/React-Portfolio/index.html",
-    "main.23460cf9.css.map": "/React-Portfolio/static/css/main.23460cf9.css.map",
-    "main.d52a5562.js.map": "/React-Portfolio/static/js/main.d52a5562.js.map"
+    "main.8a72ce59.css.map": "/React-Portfolio/static/css/main.8a72ce59.css.map",
+    "main.5273f542.js.map": "/React-Portfolio/static/js/main.5273f542.js.map"
   },
   "entrypoints": [
-    "static/css/main.23460cf9.css",
-    "static/js/main.d52a5562.js"
+    "static/css/main.8a72ce59.css",
+    "static/js/main.5273f542.js"
   ]
 }
