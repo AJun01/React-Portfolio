@@ -1,5 +1,5 @@
 import React from "react";
-import BackToPortals from "./components/BackToPortals";
+import { Link } from "react-router-dom";
 import { BACKLOT_ALPHA } from "./content/backlotAlpha";
 import styles from "./BacklotAlphaPage.module.css";
 
@@ -16,7 +16,7 @@ export default function BacklotAlphaPage() {
 
   return (
     <div className={styles.page}>
-      <BackToPortals />
+      <Link className="noir-back-portals" to="/noir-uni">← Noir Universe</Link>
       <div className={styles.inner}>
         <header className={styles.masthead}>
           <p className={styles.kicker}>{pageKicker}</p>

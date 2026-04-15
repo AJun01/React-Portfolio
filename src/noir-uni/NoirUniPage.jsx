@@ -1,10 +1,11 @@
 import React from "react";
-import BacklotAlphaPage from "./BacklotAlphaPage";
+import NoirHub from "./NoirHub";
 
 /**
- * Noir Uni — 与 cyber-uni 并列的独立主题站入口。
- * 后续可在此挂载子路由（如 /noir-uni/gallery）。
+ * Noir Uni entry point — shows the chapter-select hub.
+ * Sub-pages (/backlot, /films, /novels) are mounted directly
+ * as top-level routes in App.js.
  */
 export default function NoirUniPage() {
-  return <BacklotAlphaPage />;
+  return <NoirHub />;
 }

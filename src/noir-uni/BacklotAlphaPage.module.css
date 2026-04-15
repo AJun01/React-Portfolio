@@ -62,6 +62,8 @@
   margin: 0;
   letter-spacing: 0.02em;
   filter: grayscale(100%) contrast(1.15);
+  text-shadow: none;
+  animation: none;
 }
 
 .tagline {

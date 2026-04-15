@@ -1,0 +1,339 @@
+/* ══════════════════════════════════════════════════════════════
+   NOIR HUB — scroll-driven opening + chapter select
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Fixed background video ──────────────────────────────────── */
+.bgVideo {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+  filter: grayscale(100%) contrast(1.15) brightness(0.9);
+}
+
+/* ── Film vignette — heavy border burn ───────────────────────── */
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 42%,
+    rgba(0, 0, 0, 0.65) 80%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+}
+
+/* ── Scanlines — horizontal CRT/projector lines ──────────────── */
+.page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.13) 3px,
+    rgba(0, 0, 0, 0.13) 4px
+  );
+  /* subtle flicker to simulate projector gate */
+  animation: scanFlicker 0.12s steps(1) infinite;
+}
+@keyframes scanFlicker {
+  0%   { opacity: 0.9; }
+  33%  { opacity: 1;   }
+  66%  { opacity: 0.85;}
+  100% { opacity: 1;   }
+}
+
+/* ── Film grain (fixed, on top of scanlines) ─────────────────── */
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.65'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  animation: grainAnim 0.12s steps(3) infinite;
+}
+@keyframes grainAnim {
+  0%   { opacity: 0.22; transform: translate(0,0);     }
+  33%  { opacity: 0.28; transform: translate(-2px,1px); }
+  66%  { opacity: 0.18; transform: translate(1px,-2px); }
+  100% { opacity: 0.25; transform: translate(0,0);     }
+}
+
+/* ── Warm ivory tint — aged film stock, not pure cold white ──── */
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #000;
+  /* shift text from cold white → warm ivory like aged film stock */
+  color: #e8e0d0;
+  font-family: "Courier New", Courier, monospace;
+  overflow-x: hidden;
+}
+
+/* ── "Please scroll to play" hint ───────────────────────────── */
+.scrollHint {
+  position: fixed;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.4s ease;
+}
+
+.hintText {
+  font-size: clamp(0.55rem, 0.9vw, 0.68rem);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(230, 230, 220, 0.8);
+  /* Film projector flicker */
+  animation: filmFlicker 2.4s steps(1) infinite;
+}
+
+.hintArrow {
+  font-size: 1.1rem;
+  color: rgba(230, 230, 220, 0.7);
+  animation: arrowBob 2s ease-in-out infinite;
+}
+
+@keyframes filmFlicker {
+  0%   { opacity: 1;    }
+  8%   { opacity: 0.4;  }
+  10%  { opacity: 1;    }
+  12%  { opacity: 0.6;  }
+  14%  { opacity: 1;    }
+  50%  { opacity: 0.85; }
+  52%  { opacity: 0.3;  }
+  54%  { opacity: 0.85; }
+  100% { opacity: 1;    }
+}
+
+@keyframes arrowBob {
+  0%, 100% { transform: translateY(0);   opacity: 0.5; }
+  50%       { transform: translateY(6px); opacity: 1;   }
+}
+
+/* ── Scroll spacer — creates vertical scroll distance ────────── */
+.spacer {
+  position: relative;
+  z-index: 3;
+  /* height set inline via SPACER_VH constant */
+}
+
+/* ── Chapter select content — slides up after spacer ─────────── */
+.hubContent {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+  background: #080808;
+  padding-bottom: 4rem;
+  /* Initial hidden state — fade up */
+  opacity: 0;
+  transform: translateY(3rem);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.hubContentVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Masthead ────────────────────────────────────────────────── */
+.masthead {
+  text-align: center;
+  padding: 4rem 2rem 2.5rem;
+}
+.kicker {
+  font-family: "Cinzel", serif;
+  font-size: clamp(0.55rem, 1vw, 0.68rem);
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: rgba(220, 220, 220, 0.35);
+  margin: 0 0 1rem;
+}
+.title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin: 0 0 1.8rem;
+  /* Defeat global h1 neon from playerStats.css */
+  text-shadow: none;
+  animation: none;
+}
+.rule {
+  width: 48px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+  margin: 0 auto;
+}
+
+/* ── Acts container ──────────────────────────────────────────── */
+.acts {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 58rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem 2rem 4rem;
+  gap: 0;
+}
+
+/* ── Individual act card ─────────────────────────────────────── */
+.actCard {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 2.2rem;
+  padding: 2rem 1.5rem 2rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s, opacity 0.45s ease, transform 0.45s ease;
+  /* stagger fade-up for each card */
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+.actCard:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Cards become visible when .hubContentVisible applied */
+.hubContentVisible .actCard {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.actCard:hover,
+.actCardHovered {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Left sliding accent bar */
+.accentBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #fff;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.actCardHovered .accentBar {
+  transform: scaleY(1);
+}
+
+/* Act number */
+.actNum {
+  font-family: "Cinzel", serif;
+  font-size: clamp(0.5rem, 0.9vw, 0.65rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(200, 200, 200, 0.35);
+  white-space: nowrap;
+  width: 4.5rem;
+  flex-shrink: 0;
+  transition: color 0.3s;
+}
+.actCardHovered .actNum {
+  color: rgba(200, 200, 200, 0.7);
+}
+
+/* Center body */
+.actBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.actSubtitle {
+  font-size: clamp(0.5rem, 0.82vw, 0.65rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(190, 190, 190, 0.45);
+  margin: 0;
+  font-family: "Cinzel", serif;
+  transition: color 0.3s;
+}
+.actCardHovered .actSubtitle {
+  color: rgba(190, 190, 190, 0.75);
+}
+.actTitle {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  letter-spacing: 0.02em;
+  transition: color 0.3s;
+  /* Defeat global h2 glow from playerStats.css */
+  text-shadow: none;
+  animation: none;
+}
+.actCardHovered .actTitle {
+  color: #fff;
+}
+.actLogline {
+  font-size: clamp(0.62rem, 1vw, 0.75rem);
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  color: rgba(180, 180, 180, 0.5);
+  margin: 0;
+  max-width: 42ch;
+  transition: color 0.3s;
+}
+.actCardHovered .actLogline {
+  color: rgba(180, 180, 180, 0.8);
+}
+
+/* Right CTA */
+.actCue {
+  font-size: clamp(0.5rem, 0.78vw, 0.6rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(200, 200, 200, 0);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color 0.35s, transform 0.35s;
+  transform: translateX(-8px);
+}
+.actCardHovered .actCue {
+  color: rgba(220, 220, 220, 0.7);
+  transform: translateX(0);
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  font-size: clamp(0.5rem, 0.75vw, 0.62rem);
+  letter-spacing: 0.2em;
+  color: rgba(130, 130, 130, 0.4);
+  padding: 1.5rem 0 2.5rem;
+  /* Defeat global p styles */
+  text-shadow: none;
+  animation: none;
+}
+
+/* ── Override global button:hover from app.css ───────────────── */
+.actCard:hover {
+  background-image: none;
+}
