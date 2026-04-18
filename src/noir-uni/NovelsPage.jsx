@@ -63,7 +63,7 @@ export default function NovelsPage() {
 
   return (
     <div className={styles.page}>
-      <Link className="noir-back-portals" to="/noir-uni">← Noir Universe</Link>
+      <Link className="noir-back-portals" to="/noir-uni?skip=intro">← Noir Universe</Link>
 
       <header className={styles.masthead}>
         <p className={styles.kicker}>ACT III</p>

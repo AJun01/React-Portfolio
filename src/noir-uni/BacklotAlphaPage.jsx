@@ -16,7 +16,7 @@ export default function BacklotAlphaPage() {
 
   return (
     <div className={styles.page}>
-      <Link className="noir-back-portals" to="/noir-uni">← Noir Universe</Link>
+      <Link className="noir-back-portals" to="/noir-uni?skip=intro">← Noir Universe</Link>
       <div className={styles.inner}>
         <header className={styles.masthead}>
           <p className={styles.kicker}>{pageKicker}</p>

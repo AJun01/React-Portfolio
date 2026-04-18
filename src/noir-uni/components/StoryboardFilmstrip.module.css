@@ -1,0 +1,204 @@
+/* —— Filmstrip visual area (fills the host card) ——
+   `padding-bottom` reserves breathing room for the host card's frosted
+   bottom overlay so the centered scrolling track doesn't collide with it. */
+.filmstripVisual {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  padding-bottom: 4rem;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse 80% 140% at 50% 50%,
+      rgba(255, 255, 255, 0.05),
+      transparent 72%
+    ),
+    rgba(0, 0, 0, 0.35);
+}
+
+/* Storyboard header — pinned above the scrolling strip, cinema-slate vibe. */
+.filmstripHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(200, 200, 205, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.filmstripTag {
+  font-family: "Inter", ui-monospace, "SFMono-Regular", monospace;
+  font-weight: 700;
+  color: rgba(255, 181, 100, 0.9);
+}
+
+.filmstripTitle {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 0.92rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: rgba(240, 240, 240, 0.92);
+  flex: 1 1 auto;
+}
+
+.filmstripHint {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  color: rgba(160, 160, 165, 0.55);
+  font-family: "Inter", ui-monospace, "SFMono-Regular", monospace;
+}
+
+/* —— Scrolling track (paused → runs on hover / focus-within) ——
+   `margin: auto 0` absorbs the remaining column space above and below so the
+   track sits optically centered between the slate header and the host card's
+   bottom overlay, instead of being pinned to the top. */
+.track {
+  display: flex;
+  gap: 1.1rem;
+  padding: 1rem 0 0.9rem;
+  width: max-content;
+  flex-shrink: 0;
+  margin: auto 0;
+  will-change: transform;
+  animation: filmstripScroll 60s linear infinite;
+  animation-play-state: paused;
+  /* Edge fade so frames dissolve into the card sides. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 4%,
+    #000 96%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 4%,
+    #000 96%,
+    transparent 100%
+  );
+}
+
+.filmstripVisual:hover .track,
+.filmstripVisual:focus-within .track {
+  animation-play-state: running;
+}
+
+@keyframes filmstripScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
+
+/* —— Scene group (scene slate + its shots) —— */
+.sceneGroup {
+  display: flex;
+  align-items: stretch;
+  gap: 0.7rem;
+  padding-right: 0.55rem;
+  border-right: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.sceneTag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.8rem;
+  width: 164px;
+  min-width: 164px;
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+}
+
+.sceneTagId {
+  font-family: "Inter", ui-monospace, "SFMono-Regular", monospace;
+  font-weight: 700;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 181, 100, 0.92);
+}
+
+.sceneTagSlug {
+  font-size: 0.64rem;
+  line-height: 1.3;
+  color: rgba(230, 230, 235, 0.78);
+}
+
+.sceneTagCont {
+  align-self: flex-start;
+  padding: 0.12em 0.55em;
+  border-radius: 999px;
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(200, 200, 205, 0.72);
+}
+
+.sceneTagContLinked {
+  background: rgba(93, 148, 101, 0.18);
+  border-color: rgba(120, 170, 130, 0.4);
+  color: rgba(180, 220, 180, 0.92);
+}
+
+.sceneShots {
+  display: flex;
+  gap: 0.55rem;
+  align-items: stretch;
+}
+
+/* —— Individual frame —— */
+.frame {
+  margin: 0;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.frameImg {
+  display: block;
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  background: #0a0a0a;
+}
+
+.frameMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  font-family: "Inter", ui-monospace, "SFMono-Regular", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  color: rgba(210, 210, 215, 0.78);
+}
+
+.frameId {
+  font-weight: 700;
+  color: rgba(255, 181, 100, 0.92);
+}
+
+.frameMove {
+  margin-left: auto;
+  color: rgba(160, 160, 165, 0.7);
+}

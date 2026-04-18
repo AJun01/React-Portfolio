@@ -1,6 +1,7 @@
 import React, {
   useRef, useCallback, useState, useEffect,
 } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import openingVideo from '../assets/cyber/opening_scrub.mp4';
 import BackToUniverses from './components/Shared/BackToUniverses';
 import HUDFrame from './components/HUDFrame/HUDFrame';
@@ -185,6 +186,23 @@ function getActiveSection(sl, vw) {
   if (sl < 10.5 * vw)            return 'projects';
   return 'contact';
 }
+
+// ── Panel-index map for deep links (`?to=<section>`) ───────────────
+// Units: multiples of 100vw (the horizontal-scroll container's page width).
+//   spacer(4) → hero(4) → psu(5) → gap(6) → bu(7) → gsoc(8) → skills(9)
+//   → projects(10) → contact(11)
+// Values align with the panel layout comments above and with
+// `getActiveSection`. Add more entries as needed.
+const DEEP_LINK_TARGETS = {
+  about:    SPACER_VW,        // hero panel (AJ name intro)
+  psu:      SPACER_VW + 1,
+  workgap:  SPACER_VW + 2,
+  bu:       SPACER_VW + 3,
+  gsoc:     SPACER_VW + 4,
+  skills:   SPACER_VW + 5,
+  projects: SPACER_VW + 6,
+  contact:  SPACER_VW + 7,
+};
 
 // ── Main component ──────────────────────────────────────────────────
 export default function CyberUniHorizontalPage() {
@@ -400,6 +418,46 @@ export default function CyberUniHorizontalPage() {
     vid.currentTime = 0;
     // Force buffering so fastSeek has frames ready immediately
     vid.load();
+  }, []);
+
+  // ── Deep-link: `?to=about` jumps straight to a panel on mount ─────
+  // When arriving from an external CTA (e.g. Backlot footer's
+  // "Find the creator" button), skip the opening video scrub and land
+  // precisely on the requested panel. Uses double-rAF so the scroll
+  // container has finished its initial layout before we seek.
+  //
+  // The existing scroll handler picks up the jumped scrollLeft and
+  // updates ui opacity / video filter / active section → no extra
+  // state wiring needed here.
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    const target = searchParams.get('to');
+    if (!target) return;
+    const panelIndex = DEEP_LINK_TARGETS[target];
+    if (panelIndex == null) return;
+
+    const el = scrollRef.current;
+    if (!el) return;
+
+    // Double-rAF → layout + video preload cycle has a chance to settle,
+    // otherwise window.innerWidth can briefly report 0 on some browsers
+    // during hard-refresh.
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        el.scrollLeft = panelIndex * window.innerWidth;
+        // Clean the URL so back-nav / share links aren't sticky.
+        setSearchParams({}, { replace: true });
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+    };
+    // Only run on mount — subsequent `searchParams` mutations are our
+    // own cleanup and should NOT re-trigger the jump.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Work Gap stagger — triggers whenever the panel enters/leaves view ──

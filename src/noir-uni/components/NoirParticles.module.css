@@ -1,0 +1,52 @@
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: screen;
+}
+
+.dust {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.65) 40%,
+    rgba(255, 255, 255, 0.15) 70%,
+    rgba(255, 255, 255, 0) 90%
+  );
+  box-shadow:
+    0 0 6px rgba(255, 255, 255, 0.55),
+    0 0 14px rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  animation-name: noir-drift;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  will-change: transform, opacity;
+}
+
+@keyframes noir-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--peak-opacity, 0.4);
+  }
+  88% {
+    opacity: var(--peak-opacity, 0.4);
+  }
+  100% {
+    transform: translate3d(var(--drift, 0), var(--rise, -60px), 0);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dust {
+    animation: none;
+    opacity: calc(var(--peak-opacity, 0.4) * 0.5);
+  }
+}

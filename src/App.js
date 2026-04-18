@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import CyberUniHorizontalPage from "./cyber-uni/CyberUniHorizontalPage";
 import NoirUniPage from "./noir-uni/NoirUniPage";
-import BacklotAlphaPage from "./noir-uni/BacklotAlphaPage";
+import BacklotProductPage from "./noir-uni/BacklotProductPage";
 import FilmsPage from "./noir-uni/FilmsPage";
 import NovelsPage from "./noir-uni/NovelsPage";
 import PixelUniPage from "./pixel-uni/PixelUniPage";
@@ -15,7 +15,7 @@ const App = () => {
       <Route path="/" element={<LandingPage />} />
       <Route path="/cyber-uni" element={<CyberUniHorizontalPage />} />
       <Route path="/noir-uni" element={<NoirUniPage />} />
-      <Route path="/noir-uni/backlot" element={<BacklotAlphaPage />} />
+      <Route path="/noir-uni/backlot" element={<BacklotProductPage />} />
       <Route path="/noir-uni/films" element={<FilmsPage />} />
       <Route path="/noir-uni/novels" element={<NovelsPage />} />
       <Route

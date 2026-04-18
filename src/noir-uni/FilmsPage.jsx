@@ -4,88 +4,109 @@ import styles from "./FilmsPage.module.css";
 
 /**
  * Screening Room — personal film appreciation archive.
- * Replace FILMS entries with your own picks and notes.
+ * Ten films I keep coming back to, ranked by how often I rewatch them
+ * rather than any objective "greatness" — this is a shelf, not a canon.
  */
 const FILMS = [
   {
     id: 1,
-    title: "Chinatown",
-    director: "Roman Polanski",
-    year: 1974,
+    title: "Whiplash",
+    director: "Damien Chazelle",
+    year: 2014,
     rating: 5,
-    genre: "Neo-Noir",
+    genre: "Music Drama",
     note:
-      "The purest noir ever made. Evaton's arc is a masterclass in dramatic irony — we know exactly what he doesn't, and it destroys us anyway. The final line is cinema.",
+      "Chazelle weaponized a drum kit into a 106-minute argument about obsession. \"Not my tempo\" is the cruelest three-word performance direction ever filmed. The final nine minutes are a duet between actor and editor.",
   },
   {
     id: 2,
-    title: "Blade Runner 2049",
-    director: "Denis Villeneuve",
-    year: 2017,
+    title: "Little Miss Sunshine",
+    director: "Jonathan Dayton & Valerie Faris",
+    year: 2006,
     rating: 5,
-    genre: "Sci-Fi Noir",
+    genre: "Family Comedy-Drama",
     note:
-      "Villeneuve understood that the original wasn't about replicants — it was about longing. 2049 extends that into something even lonelier and more beautiful.",
+      "A van that won't start, a family that shouldn't work. The beauty pageant finale is the warmest middle finger to conformity American cinema has ever thrown. I rewatch it whenever I feel like I'm not enough.",
   },
   {
     id: 3,
-    title: "Parasite",
-    director: "Bong Joon-ho",
-    year: 2019,
-    rating: 5,
-    genre: "Social Thriller",
-    note:
-      "A genre film that refuses to be one genre. Every rewatch reveals another layer of visual foreshadowing Bong planted in the architecture itself.",
-  },
-  {
-    id: 4,
-    title: "The Double Life of Véronique",
-    director: "Krzysztof Kieślowski",
-    year: 1991,
+    title: "Scent of a Woman",
+    director: "Martin Brest",
+    year: 1992,
     rating: 5,
     genre: "Drama",
     note:
-      "Not a story you follow — a feeling you inhabit. Irène Jacob carries something ineffable in every frame. I can't explain why it moves me, which is the point.",
+      "Pacino's \"Hoo-ah\" is the Stanley Kowalski scream of its generation, but the tango scene is what I actually remember — a blind colonel teaching a boy that some things you just have to feel your way through.",
+  },
+  {
+    id: 4,
+    title: "The Banshees of Inisherin",
+    director: "Martin McDonagh",
+    year: 2022,
+    rating: 5,
+    genre: "Tragic Comedy",
+    note:
+      "A friendship ending over nothing, on an island that exists outside time. McDonagh makes cruelty funny and then makes you feel awful for laughing. Colin Farrell's face is the whole film.",
   },
   {
     id: 5,
-    title: "No Country for Old Men",
-    director: "Coen Brothers",
-    year: 2007,
+    title: "Howl's Moving Castle",
+    director: "Hayao Miyazaki",
+    year: 2004,
     rating: 5,
-    genre: "Neo-Noir Thriller",
+    genre: "Animated Fantasy",
     note:
-      "Anton Chigurh isn't a villain. He's an argument. The Coens film McCarthy's fatalism with such restraint that the violence hits harder for what they leave out.",
+      "Miyazaki's most maximalist film — war, curses, a walking Victorian house, and a love story that aged a teenage girl into her nineties. I rewatch it whenever the world starts to feel mechanical.",
   },
   {
     id: 6,
-    title: "In the Mood for Love",
-    director: "Wong Kar-wai",
-    year: 2000,
+    title: "The Irishman",
+    director: "Martin Scorsese",
+    year: 2019,
     rating: 5,
-    genre: "Romance Drama",
+    genre: "Crime Epic",
     note:
-      "A film about what isn't said, what isn't done. Every slow-motion staircase descent is a love scene. Wong Kar-wai proved restraint is the most romantic choice.",
+      "Three and a half hours that earn every minute. The last twenty are among the quietest, saddest things Scorsese has ever filmed. De Niro eating alone in that nursing-home room breaks me every time.",
   },
   {
     id: 7,
-    title: "Mulholland Drive",
-    director: "David Lynch",
-    year: 2001,
+    title: "Spider-Man: No Way Home",
+    director: "Jon Watts",
+    year: 2021,
     rating: 5,
-    genre: "Surrealist Noir",
+    genre: "Superhero / Multiverse",
     note:
-      "Hollywood as a machine that eats people. The dream logic isn't confusion — it's the only honest way to depict desire, failure, and Los Angeles.",
+      "A movie that knows exactly what it is and what it means to the audience. When the three of them stand on the Statue of Liberty together, two decades of superhero filmmaking collapse into a single collective gasp.",
   },
   {
     id: 8,
-    title: "There Will Be Blood",
-    director: "Paul Thomas Anderson",
-    year: 2007,
+    title: "Captain America: Civil War",
+    director: "Anthony & Joe Russo",
+    year: 2016,
     rating: 5,
-    genre: "Epic Drama",
+    genre: "Superhero",
     note:
-      "Daniel Plainview might be the most complete portrait of American ambition ever filmed. DDL doesn't act in this — he becomes.",
+      "The airport battle is still the best superhero action sequence ever choreographed. But the heart is Zemo — a villain whose entire plan is to remind friends of what friends are capable of doing to each other.",
+  },
+  {
+    id: 9,
+    title: "The Dark Knight",
+    director: "Christopher Nolan",
+    year: 2008,
+    rating: 5,
+    genre: "Superhero / Crime Thriller",
+    note:
+      "Heath Ledger redefined what a comic-book antagonist could be. \"Why so serious?\" is the moment superhero movies grew up and refused to be toys again. The interrogation scene is a two-hander for the ages.",
+  },
+  {
+    id: 10,
+    title: "The Lord of the Rings Trilogy",
+    director: "Peter Jackson",
+    year: 2003,
+    rating: 5,
+    genre: "Epic Fantasy",
+    note:
+      "Not a trilogy — a pilgrimage. Jackson turned Tolkien into a landscape you can walk through. Every year I do all three extended cuts in one weekend. Every year Boromir still dies and I still care.",
   },
 ];
 
@@ -102,12 +123,12 @@ export default function FilmsPage() {
 
   return (
     <div className={styles.page}>
-      <Link className="noir-back-portals" to="/noir-uni">← Noir Universe</Link>
+      <Link className="noir-back-portals" to="/noir-uni?skip=intro">← Noir Universe</Link>
 
       <header className={styles.masthead}>
         <p className={styles.kicker}>ACT II</p>
         <h1 className={styles.title}>Screening Room</h1>
-        <p className={styles.subtitle}>A personal archive of films worth remembering</p>
+        <p className={styles.subtitle}>Ten films I keep coming back to — the ones that shaped how I watch everything else</p>
         <div className={styles.rule} />
       </header>
 

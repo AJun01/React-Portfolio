@@ -1,7 +1,7 @@
 import React, {
   useState, useEffect, useRef, useCallback,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import BackToPortals from "./components/BackToPortals";
 import openingVideo from "../assets/noir/opening_scrub.mp4";
 import styles from "./NoirHub.module.css";
@@ -52,14 +52,17 @@ const ACTS = [
 
 export default function NoirHub() {
   const navigate   = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const skipIntro  = searchParams.get("skip") === "intro";
   const vidRef     = useRef(null);
   const rafRef     = useRef(null);         // scroll rAF throttle
   const targetRef  = useRef(0);            // desired video time
   const seekLoopId = useRef(null);         // lerp rAF id
+  const handleScrollRef = useRef(() => {});// holds latest handleScroll
   const [hovered,        setHovered]        = useState(null);
-  const [videoFilter,    setVideoFilter]    = useState("none");
-  const [hintOpacity,    setHintOpacity]    = useState(1);
-  const [contentVisible, setContentVisible] = useState(false);
+  const [videoFilter,    setVideoFilter]    = useState(skipIntro ? "brightness(0)" : "none");
+  const [hintOpacity,    setHintOpacity]    = useState(skipIntro ? 0 : 1);
+  const [contentVisible, setContentVisible] = useState(skipIntro);
 
   // ── Lerp seek loop (same pattern as cyber-uni) ─────────────────
   const startSeekLoop = useCallback(() => {
@@ -77,6 +80,11 @@ export default function NoirHub() {
         seekLoopId.current = requestAnimationFrame(loop);
       } else {
         seekLoopId.current = null;
+        // Re-evaluate the content-reveal gate: if the user had already
+        // scrolled past the fade threshold but we were holding the
+        // chapter-select hidden because the video wasn't at its last
+        // frame yet, this is the moment to let it in.
+        handleScrollRef.current();
       }
     };
     seekLoopId.current = requestAnimationFrame(loop);
@@ -95,25 +103,50 @@ export default function NoirHub() {
       // ── Scroll hint fades as soon as user scrolls ──────────────
       setHintOpacity(Math.max(0, 1 - sy / (vh * 0.25)));
 
-      // ── Video scrub ────────────────────────────────────────────
       const vid = vidRef.current;
+
+      // ── Video scrub ────────────────────────────────────────────
+      // Normal mode: scrub frame-by-frame as scrollY progresses.
+      // Fast-scroll fix: if the user has already scrolled past the
+      // end of the spacer but the lerp seek hasn't caught up yet,
+      // snap the video to its final frame immediately so the content
+      // reveal below isn't blocked waiting for the lerp.
       if (vid && isFinite(vid.duration)) {
-        const frac = Math.min(sy / phase1Px, 1);
-        targetRef.current = frac * vid.duration;
-        startSeekLoop();
+        if (sy >= spacerPx) {
+          if (vid.currentTime < vid.duration - 0.05) {
+            targetRef.current = vid.duration;
+            vid.currentTime = vid.duration;
+          }
+        } else {
+          const frac = Math.min(sy / phase1Px, 1);
+          targetRef.current = frac * vid.duration;
+          startSeekLoop();
+        }
       }
 
+      // Compute "is video actually at its last frame?" AFTER the
+      // potential snap above, so a fast scroll-past immediately
+      // unlocks the content reveal on the very same frame.
+      const videoAtEnd =
+        !!vid &&
+        isFinite(vid.duration) &&
+        vid.currentTime >= vid.duration - 0.08;
+
       // ── Phase 2: fade video to black, reveal content ───────────
+      // Content reveal is gated on BOTH "user scrolled past" AND
+      // "video is visibly at the last frame" — this prevents the
+      // awkward race where the chapter-select slides in over a
+      // mid-scrub video frame when the user swipes through fast.
       if (sy >= spacerPx) {
         setVideoFilter("brightness(0)");
-        setContentVisible(true);
+        setContentVisible(videoAtEnd);
       } else if (sy >= phase1Px) {
         const t      = (sy - phase1Px) / (spacerPx - phase1Px);
         const bright = (1 - t).toFixed(3);
         setVideoFilter(`brightness(${bright})`);
-        // Start revealing content a little early (t > 0.6)
-        if (t > 0.6) setContentVisible(true);
-        else setContentVisible(false);
+        // Start revealing a little early (t > 0.6) ONLY once the
+        // video has actually reached the end frame — otherwise hold.
+        setContentVisible(t > 0.6 && videoAtEnd);
       } else {
         setVideoFilter("none");
         setContentVisible(false);
@@ -121,9 +154,31 @@ export default function NoirHub() {
     });
   }, [startSeekLoop]);
 
-  // ── Mount: reset scroll, init video, attach listeners ─────────
+  // Keep the ref pointing at the latest handleScroll so the seek lerp
+  // can trigger a reveal re-check when it finishes catching up.
   useEffect(() => {
-    window.scrollTo(0, 0);
+    handleScrollRef.current = handleScroll;
+  }, [handleScroll]);
+
+  // ── Mount: reset scroll, init video, attach listeners ─────────
+  // Snapshot the URL intent into a ref so this effect runs exactly
+  // once on mount (setSearchParams below would otherwise retrigger it).
+  const skipIntroRef = useRef(skipIntro);
+  useEffect(() => {
+    // If the user is returning from a sub-page (?skip=intro), drop them
+    // straight into the chapter-select area instead of replaying the
+    // opening scrub video. Otherwise start at the very top.
+    const shouldSkip = skipIntroRef.current;
+    const vh = window.innerHeight;
+    const spacerPx = SPACER_VH * vh;
+    if (shouldSkip) {
+      window.scrollTo(0, spacerPx + 1);
+      // Strip ?skip=intro from the URL so a later manual refresh still
+      // plays the full intro.
+      setSearchParams({}, { replace: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
 
     // Hide the browser scrollbar for this page only; restore on unmount
     const styleEl = document.createElement("style");
@@ -139,6 +194,18 @@ export default function NoirHub() {
       vid.pause();
       vid.currentTime = 0;
       vid.load();
+      if (shouldSkip) {
+        // Park the video at its last frame so the "past spacer" visual
+        // state matches (fully faded to black, video at the end).
+        // Duration may not be known until metadata loads, so wait.
+        const setEnd = () => {
+          if (isFinite(vid.duration) && vid.duration > 0) {
+            vid.currentTime = vid.duration;
+          }
+        };
+        if (isFinite(vid.duration) && vid.duration > 0) setEnd();
+        else vid.addEventListener("loadedmetadata", setEnd, { once: true });
+      }
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -148,7 +215,7 @@ export default function NoirHub() {
       if (seekLoopId.current) cancelAnimationFrame(seekLoopId.current);
       document.head.removeChild(styleEl);
     };
-  }, [handleScroll]);
+  }, [handleScroll, setSearchParams]);
 
   return (
     <div className={styles.page}>

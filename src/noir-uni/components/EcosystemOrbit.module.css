@@ -1,0 +1,307 @@
+/* —— Orbit field (fixed aspect-ratio square that hosts the radial layout) —— */
+.orbitField {
+  position: relative;
+  width: min(100%, 600px);
+  aspect-ratio: 1 / 1;
+  margin: 2.5rem auto 0;
+  isolation: isolate;
+}
+
+/* Dotted guide rings drawn as SVG so the dash pattern stays crisp at any size. */
+.orbitRings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Center halo wrapper — just an anchor for the absolutely-positioned pulses. */
+.orbitCenterGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* One ripple ring. We render three of these staggered by -2s each so there's
+   always a wave in flight — reads like a radar ping radiating from Backlot.
+   Starts at ~0.4× the base size, fades in, expands to ~4×, fades out by 100%. */
+.orbitCenterPulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.12) 28%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 80%
+  );
+  filter: blur(4px);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.4);
+  will-change: transform, opacity;
+  animation: orbitPulse 6s ease-out infinite;
+}
+
+@keyframes orbitPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbitCenterPulse {
+    animation: none;
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+  /* Collapse the three pulses to one visible state so the center still
+     looks like it has a halo when motion is suppressed. */
+  .orbitCenterPulse:nth-child(n + 2) {
+    display: none;
+  }
+}
+
+/* —— Center node (Backlot) —— */
+.orbitCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  z-index: 3;
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 65%
+    ),
+    linear-gradient(165deg, rgba(36, 36, 40, 0.95), rgba(8, 8, 10, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 28px;
+  box-shadow:
+    0 0 60px rgba(255, 255, 255, 0.16),
+    0 20px 56px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.orbitCenterMark {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.02em;
+}
+
+.orbitCenterLabel {
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(200, 200, 205, 0.8);
+}
+
+/* —— Orbiting tiles ——
+   The transform chain: translate to center, rotate by angle, translate
+   outward along the rotated Y axis, then counter-rotate so the tile stays
+   visually upright. Changing `--orbit-angle` or `--orbit-radius` moves a
+   tile without touching the rest of the math. */
+.orbitTile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.4rem;
+  color: var(--color-text, #e8e8e8);
+  background:
+    radial-gradient(
+      120% 100% at 50% 0%,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0) 70%
+    ),
+    linear-gradient(165deg, rgba(26, 26, 30, 0.9), rgba(10, 10, 12, 0.95));
+  border-radius: 18px;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--orbit-angle))
+    translateY(calc(var(--orbit-radius) * -1))
+    rotate(calc(var(--orbit-angle) * -1));
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+.orbitTileInner {
+  width: 88px;
+  height: 88px;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.orbitTileOuter {
+  width: 72px;
+  height: 72px;
+  z-index: 1;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  opacity: 0.78;
+}
+
+.orbitTileLive {
+  /* Subtle inner highlight for "Live" status */
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.5),
+    0 0 22px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.orbitTileSoon {
+  /* Roadmap items read a touch muted and slightly desaturated. */
+  filter: saturate(0.85);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .orbitTile:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    opacity: 1;
+    transform:
+      translate(-50%, -50%)
+      rotate(var(--orbit-angle))
+      translateY(calc(var(--orbit-radius) * -1))
+      rotate(calc(var(--orbit-angle) * -1))
+      scale(1.08);
+    box-shadow:
+      0 16px 40px rgba(0, 0, 0, 0.6),
+      0 0 32px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+}
+
+.orbitTileGlyph {
+  display: inline-flex;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.orbitTileOuter .orbitTileGlyph {
+  /* Slightly smaller glyph in the outer ring to match the smaller tile. */
+  transform: scale(0.88);
+  color: rgba(220, 220, 225, 0.85);
+}
+
+.orbitTileLabel {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(220, 220, 225, 0.88);
+  line-height: 1.1;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.orbitTileOuter .orbitTileLabel {
+  font-size: 0.6rem;
+  color: rgba(195, 195, 200, 0.8);
+}
+
+/* —— Legend under the orbit —— */
+.orbitLegend {
+  position: absolute;
+  bottom: -0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(200, 200, 205, 0.75);
+  white-space: nowrap;
+}
+
+.legendDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legendDot[data-kind="live"] {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.45);
+}
+
+.legendDot[data-kind="soon"] {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+.legendSep {
+  opacity: 0.4;
+}
+
+@media (max-width: 560px) {
+  .orbitField {
+    width: min(100%, 400px);
+  }
+
+  .orbitCenter {
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
+  }
+
+  .orbitCenterMark {
+    font-size: 1.7rem;
+  }
+
+  .orbitTileInner {
+    width: 72px;
+    height: 72px;
+  }
+
+  .orbitTileOuter {
+    width: 60px;
+    height: 60px;
+  }
+}
